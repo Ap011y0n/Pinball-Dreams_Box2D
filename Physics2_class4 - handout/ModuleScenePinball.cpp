@@ -96,15 +96,134 @@ bool ModuleScenePinball::Start()
 	14, 64,
 	6, 64
 	};
+	int MappartL[24] = {
+	17, 39,
+	14, 44,
+	17, 50,
+	15, 160,
+	21, 170,
+	138, 221,
+	148, 210,
+	155, 207,
+	27, 161,
+	22, 148,
+	22, 48,
+	25, 42
+	};
+	int MappartR[22] = {
+	181, 40,
+	177, 47,
+	178, 52,
+	178, 160,
+	28, 211,
+	38, 215,
+	40, 227,
+	175, 170,
+	185, 161,
+	184, 51,
+	187, 47
+	};
+	int slingshotL[16] = {
+		74, 10,
+		71, 15,
+		69, 123,
+		71, 128,
+		122, 149,
+		136, 146,
+		140, 136,
+		82, 10
+	};
+	int slingshotR[16] = {
+	126, 12,
+	114, 20,
+	63, 139,
+	64, 147,
+	79, 152,
+	129, 135,
+	134, 126,
+	133, 20
+	};
+	int MapTunnel[52] = {
+	144, 388,
+	78, 250,
+	81, 222,
+	98, 184,
+	112, 161,
+	256, 19,
+	273, 16,
+	281, 21,
+	280, 67,
+	269, 76,
+	253, 73,
+	226, 63,
+	209, 73,
+	113, 170,
+	112, 186,
+	121, 205,
+	137, 236,
+	187, 336,
+	180, 340,
+	131, 241,
+	120, 232,
+	104, 232,
+	92, 242,
+	88, 258,
+	148, 378,
+	149, 385
+	};
+	int lane[24] = {
+	4, 18,
+	8, 9,
+	15, 6,
+	26, 6,
+	32, 10,
+	34, 17,
+	34, 53,
+	33, 61,
+	27, 65,
+	11, 65,
+	5, 61,
+	4, 52
+	};
+	int target1[16] = {
+	15, 14,
+	16, 26,
+	122, 81,
+	135, 80,
+	141, 67,
+	131, 56,
+	32, 7,
+	22, 7
+	};
+	int target2[16] = {
+	42, 107,
+	30, 114,
+	19, 109,
+	18, 98,
+	58, 19,
+	69, 13,
+	79, 18,
+	79, 29
+	};
 	
 	App->physics->CreateChain(0, 0, pinball_board, 94);
-	
+	App->physics->CreateChain(200, 816, MappartL, 24);
+	App->physics->CreateChain(580, 816, MappartR, 22);
+	App->physics->CreateChain(155, 150, MapTunnel, 52);
+	App->physics->CreateChain(473, 183, lane, 24);
+	App->physics->CreateChain(613, 183, lane, 24);
+	App->physics->CreateChain(542, 192, lane, 24);
 
 	rotAxisL = App->physics->CreateCircle(358, 1040, 10, b2_staticBody);
 	rotAxisR = App->physics->CreateCircle(597, 1040, 10, b2_staticBody);
 	FlipperL = App->physics->CreatePolygon(358, 1040, Flipper_L, 16);
 	FlipperR = App->physics->CreatePolygon(510, 1023, Flipper_R, 16);
-	
+	SlingshotL = App->physics->CreatePolygon(200, 820, slingshotL, 16, b2_staticBody);
+	SlingshotR = App->physics->CreatePolygon(580, 810, slingshotR, 16, b2_staticBody);
+	Bumper1 = App->physics->CreateCircle(433, 350, 50, b2_staticBody);
+	Bumper2 = App->physics->CreateCircle(560, 450, 50, b2_staticBody);
+	Target1 = App->physics->CreatePolygon(445, 495, target1, 16, b2_staticBody);
+	Target2 = App->physics->CreatePolygon(675, 535, target2, 16, b2_staticBody);
 
 	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, 1155, SCREEN_WIDTH, 50);
 

@@ -27,7 +27,12 @@ public:
 	PhysBody* rotAxisR;
 	PhysBody* FlipperL;
 	PhysBody* FlipperR;
-
+	PhysBody* SlingshotL;
+	PhysBody* SlingshotR;
+	PhysBody* Bumper1;
+	PhysBody* Bumper2;
+	PhysBody* Target1;
+	PhysBody* Target2;
 	// sensor PhysBody* Hole;
 	PhysBody* sensor;
 	b2RevoluteJoint* FlipperLJoint;
