@@ -23,6 +23,7 @@ bool ModuleScenePinball::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 	board = App->textures->Load("pinball/pinball_board.png");
+	fliper_Left = App->textures->Load("pinball/fliper_Left.png");
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -249,16 +250,31 @@ bool ModuleScenePinball::CleanUp()
 
 // Update: draw background
 update_status ModuleScenePinball::Update()
-{	
+{
+	float c;
+	int a, b;
+
 	int x, y;
+
+	c = FlipperL->GetRotation();
+	FlipperL->GetPosition(a, b);
 	ball->GetPosition(x, y);
+	
 	LOG("x %d x %d", x, y);
+
 	FlipperLJoint->SetMotorSpeed(-1000 * DEGTORAD);
-	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) 
+	{
 		FlipperLJoint->SetMotorSpeed(1000 * DEGTORAD);
+		FlipperL->GetPosition(a, b);
+		c = FlipperL->GetRotation();
+
 	}
+	
+	
 	FlipperRJoint->SetMotorSpeed(1000 * DEGTORAD);
-	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT) {
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT) 
+	{
 		FlipperRJoint->SetMotorSpeed(-1000 * DEGTORAD);
 	}
 
@@ -266,8 +282,11 @@ update_status ModuleScenePinball::Update()
 	App->input->GetMouseX(), App->input->GetMouseY());
 	App->window->SetTitle(title.GetString());
 	MoveCamera();
+
+
+	//All renders
 	App->renderer->Blit(board, 0, 0, NULL);
-	
+	App->renderer->Blit(fliper_Left, (a+5),(b+5), NULL, 1.0f, c, 0, 0);
 	return UPDATE_CONTINUE;
 }
 

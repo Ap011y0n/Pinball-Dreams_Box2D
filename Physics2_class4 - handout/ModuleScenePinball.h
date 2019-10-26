@@ -46,6 +46,7 @@ public:
 */
 
 	SDL_Texture* board;
+	SDL_Texture* fliper_Left;
 /*	SDL_Texture* box;
 	SDL_Texture* rick;
 	uint bonus_fx;
