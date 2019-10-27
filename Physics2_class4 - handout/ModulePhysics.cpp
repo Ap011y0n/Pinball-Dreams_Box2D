@@ -62,7 +62,7 @@ update_status ModulePhysics::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
-PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, b2BodyType type, float restitution)
+PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, char* name, b2BodyType type, float restitution)
 {
 	b2BodyDef body;
 	body.type = type;
@@ -80,6 +80,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, b2BodyType type,
 	b->CreateFixture(&fixture);
 
 	PhysBody* pbody = new PhysBody();
+	pbody->name = name;
 	pbody->body = b;
 	b->SetUserData(pbody);
 	pbody->width = pbody->height = radius;
@@ -87,7 +88,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, b2BodyType type,
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2BodyType type)
+PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, char* name, b2BodyType type)
 {
 	b2BodyDef body;
 	body.type = type;
@@ -103,6 +104,7 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2
 	b->CreateFixture(&fixture);
 
 	PhysBody* pbody = new PhysBody();
+	pbody->name = name;
 	pbody->body = b;
 	b->SetUserData(pbody);
 	pbody->width = width * 0.5f;
@@ -111,7 +113,7 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, b2
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height, b2BodyType type)
+PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height, char* name, b2BodyType type)
 {
 	b2BodyDef body;
 	body.type = type;
@@ -131,6 +133,7 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 
 	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
+	pbody->name = name;
 	b->SetUserData(pbody);
 	pbody->width = width;
 	pbody->height = height;
@@ -138,7 +141,7 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, b2BodyType type)
+PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, char* name, b2BodyType type)
 {
 	b2BodyDef body;
 	body.type = type;
@@ -165,6 +168,7 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, b2Body
 	delete p;
 
 	PhysBody* pbody = new PhysBody();
+	pbody->name = name;
 	pbody->body = b;
 	b->SetUserData(pbody);
 	pbody->width = pbody->height = 0;
@@ -173,7 +177,7 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, b2Body
 }
 
 //create polygon ---------------------------------------------------------------------------
-PhysBody*  ModulePhysics::CreatePolygon(int x, int y, int* points, int size, b2BodyType type)
+PhysBody*  ModulePhysics::CreatePolygon(int x, int y, int* points, int size, char* name, b2BodyType type)
 {
 	b2BodyDef body;
 	body.type = type; 
@@ -199,78 +203,12 @@ PhysBody*  ModulePhysics::CreatePolygon(int x, int y, int* points, int size, b2B
 	
 	delete p;
 	PhysBody* pbody = new PhysBody();
+	pbody->name = name;
 	pbody->body = b;
 	b->SetUserData(pbody);
 	pbody->width = pbody->height = 0;
 	return pbody;
 }
-	//create polygon ---------------------------------------------------------------------------
-// 
-//OLD create polygon
-/* Create poligon old
-void ModulePhysics::CreatePolygon(b2Body* bodyB)
-{
-	int x = SCREEN_WIDTH / 2;
-	int y = SCREEN_HEIGHT / 1.5f;
-	b2BodyDef body;
-	body.type = b2_dynamicBody; //this will be a dynamic body
-	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y)); //a little to the left
-
-	b2Body* b = world->CreateBody(&body);
-
-	b2PolygonShape polygonShape;
-	int drag[16] = {
-	29, 50,
-	34, 28,
-	67, 12,
-	358, 4,
-	400, 42,
-	367, 102,
-	56, 76,
-	35, 68
-	};
-
-	int size = 16;
-	b2Vec2* p = new b2Vec2[size / 2];
-	for (uint i = 0; i < size / 2; ++i)
-	{
-		p[i].x = PIXEL_TO_METERS(drag[i * 2 + 0]);
-		p[i].y = PIXEL_TO_METERS(drag[i * 2 + 1]);
-	}
-
-
-
-	polygonShape.Set(p, size / 2); //pass array to the shape
-
-	b2FixtureDef myFixtureDef;
-	myFixtureDef.density = 1.0f;
-
-	myFixtureDef.shape = &polygonShape; //change the shape of the fixture
-
-	b->CreateFixture(&myFixtureDef); //add a fixture to the body
-
-	PhysBody* pbody = new PhysBody();
-	pbody->body = b;
-	b->SetUserData(pbody);
-	pbody->width = pbody->height = 0;
-
-	revoluteJointDef.bodyA = b;
-	revoluteJointDef.bodyB = bodyB;
-	revoluteJointDef.collideConnected = false;
-	revoluteJointDef.localAnchorA.Set(PIXEL_TO_METERS(342), PIXEL_TO_METERS(53));
-	revoluteJointDef.localAnchorB.Set(0, 0);
-	revoluteJointDef.referenceAngle = 0 * DEGTORAD;
-	revoluteJointDef.enableLimit = true;
-	revoluteJointDef.lowerAngle = -60 * DEGTORAD;
-	revoluteJointDef.upperAngle = 10 * DEGTORAD;
-
-
-	revoluteJointDef.enableMotor = true;
-	revoluteJointDef.maxMotorTorque = 4000;
-	revoluteJointDef.motorSpeed = -1000 * DEGTORAD;
-	revolutejoint = (b2RevoluteJoint*)world->CreateJoint(&revoluteJointDef);
-}
-*/
 
 b2RevoluteJoint*  ModulePhysics::CreateRevoluteJoint(b2Body* bodyA, b2Body* bodyB, int AnchorX, int AnchorY, int lowerAngle, int upperAngle) {
 	b2RevoluteJointDef revoluteJointDef;

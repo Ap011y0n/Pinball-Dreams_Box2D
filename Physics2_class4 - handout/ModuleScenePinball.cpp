@@ -215,21 +215,32 @@ bool ModuleScenePinball::Start()
 	App->physics->CreateChain(613, 183, lane, 24);
 	App->physics->CreateChain(542, 192, lane, 24);
 
-	rotAxisL = App->physics->CreateCircle(358, 1040, 10, b2_staticBody);
-	rotAxisR = App->physics->CreateCircle(597, 1040, 10, b2_staticBody);
+	rotAxisL = App->physics->CreateCircle(358, 1040, 10,"rotAxisL", b2_staticBody);
+	rotAxisR = App->physics->CreateCircle(597, 1040, 10,"rotAxisR", b2_staticBody);
 	FlipperL = App->physics->CreatePolygon(358, 1040, Flipper_L, 16);
 	FlipperR = App->physics->CreatePolygon(510, 1023, Flipper_R, 16);
-	SlingshotL = App->physics->CreatePolygon(200, 820, slingshotL, 16, b2_staticBody);
-	SlingshotR = App->physics->CreatePolygon(580, 810, slingshotR, 16, b2_staticBody);
-	Bumper1 = App->physics->CreateCircle(433, 350, 50, b2_staticBody);
-	Bumper2 = App->physics->CreateCircle(560, 450, 50, b2_staticBody);
-	Target1 = App->physics->CreatePolygon(445, 495, target1, 16, b2_staticBody);
-	Target2 = App->physics->CreatePolygon(675, 535, target2, 16, b2_staticBody);
+	SlingshotL = App->physics->CreatePolygon(200, 820, slingshotL, 16,"SlingshotL", b2_staticBody);
+	SlingshotR = App->physics->CreatePolygon(580, 810, slingshotR, 16,"SlingshotR", b2_staticBody);
+	Bumper1 = App->physics->CreateCircle(433, 350, 50,"Bumper1", b2_staticBody);
+	Bumper2 = App->physics->CreateCircle(560, 450, 50,"Bumper2", b2_staticBody);
+	Target1 = App->physics->CreatePolygon(445, 495, target1, 16,"Target1", b2_staticBody);
+	Target2 = App->physics->CreatePolygon(675, 535, target2, 16,"Target2", b2_staticBody);
 
-	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, 1155, SCREEN_WIDTH, 50);
+	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, 1155, SCREEN_WIDTH, 50,"sensor");
 
+	rotAxisL->listener = this;
+	rotAxisR->listener = this;
+	FlipperL->listener = this;
+	FlipperR->listener = this;
+	SlingshotL->listener = this;
+	SlingshotR->listener = this;
+	Bumper1->listener = this;
+	Bumper2->listener = this;
+	Target1->listener = this;
+	Target2->listener = this;
 	sensor->listener = this;
-	ball = App->physics->CreateCircle(810, 1070, 15, b2_dynamicBody, 0.4);
+
+	ball = App->physics->CreateCircle(810, 1070, 15, "ball", b2_dynamicBody, 0.4);
 	
 	//ball->listener = this;
 
@@ -259,8 +270,6 @@ update_status ModuleScenePinball::Update()
 	c = FlipperL->GetRotation();
 	FlipperL->GetPosition(a, b);
 	ball->GetPosition(x, y);
-	
-	LOG("x %d x %d", x, y);
 
 	FlipperLJoint->SetMotorSpeed(-1000 * DEGTORAD);
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) 
@@ -299,6 +308,7 @@ void ModuleScenePinball::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if (bodyA)
 	{
+		LOG("%s", bodyA->name);
 		for (b2Fixture* f = bodyA->body->GetFixtureList(); f; f = f->GetNext()) {
 			if (f->IsSensor()) {
 				//LOG("Sensor A");
@@ -310,6 +320,7 @@ void ModuleScenePinball::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if (bodyB)
 	{
+		LOG("%s", bodyB->name);
 		for (b2Fixture* f = bodyB->body->GetFixtureList(); f; f = f->GetNext()) {
 			if (f->IsSensor()) {
 				//LOG("Sensor B");
