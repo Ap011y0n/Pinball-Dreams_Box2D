@@ -231,6 +231,30 @@ b2RevoluteJoint*  ModulePhysics::CreateRevoluteJoint(b2Body* bodyA, b2Body* body
 return revolutejoint;
 }
 
+b2PrismaticJoint* ModulePhysics::CreatePrismaticJoint(b2Body* bodyA, b2Body* bodyB, int AnchorX, int AnchorY, int lowerTranslation, int upperTranslation) {
+	b2PrismaticJointDef prismaticJointDef;
+
+	prismaticJointDef.bodyA = bodyA;
+	prismaticJointDef.bodyB = bodyB;
+	prismaticJointDef.collideConnected = false;
+	prismaticJointDef.localAxisA.Set(0, -1);
+	prismaticJointDef.localAnchorA.Set(PIXEL_TO_METERS(AnchorX), PIXEL_TO_METERS(AnchorY));
+	prismaticJointDef.localAnchorB.Set(0, 0);
+	prismaticJointDef.referenceAngle = 0 * DEGTORAD;
+	prismaticJointDef.enableLimit = true;
+	prismaticJointDef.lowerTranslation = lowerTranslation * DEGTORAD;
+	prismaticJointDef.upperTranslation = upperTranslation * DEGTORAD;
+	prismaticJointDef.enableMotor = false;
+	prismaticJointDef.maxMotorForce = 1000;
+	prismaticJointDef.motorSpeed = PIXEL_TO_METERS(1000);
+
+
+	prismaticjoint = (b2PrismaticJoint*)world->CreateJoint(&prismaticJointDef);
+	return prismaticjoint;
+}
+
+
+
 update_status ModulePhysics::PostUpdate()
 {
 	selected = false;

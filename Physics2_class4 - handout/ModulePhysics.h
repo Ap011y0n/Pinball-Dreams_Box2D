@@ -51,12 +51,14 @@ public:
 	PhysBody* CreateChain(int x, int y, int* points, int size, char* name = "", b2BodyType type = b2_staticBody);
 	PhysBody* CreatePolygon(int x, int y, int* points, int size, char* name = "", b2BodyType type = b2_dynamicBody);
 	b2RevoluteJoint* CreateRevoluteJoint(b2Body* bodyA, b2Body* bodyB, int AnchorX, int AnchorY, int lowerAngle, int upperAngle);
+	b2PrismaticJoint* CreatePrismaticJoint(b2Body* bodyA, b2Body* bodyB, int AnchorX, int AnchorY, int lowerTranslation, int upperTranslation);
 
 
 	// b2ContactListener ---
 	void BeginContact(b2Contact* contact);
 	/*	b2RevoluteJointDef revoluteJointDef;*/
 	b2RevoluteJoint* revolutejoint;
+	b2PrismaticJoint* prismaticjoint;
 private:
 
 	bool debug;

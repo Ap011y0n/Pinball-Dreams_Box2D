@@ -6,7 +6,7 @@
 
 class PhysBody;
 class b2RevoluteJoint;
-
+class b2PrismaticJoint;
 
 class ModuleScenePinball : public Module
 {
@@ -35,8 +35,11 @@ public:
 	PhysBody* Target2;
 	// sensor PhysBody* Hole;
 	PhysBody* sensor;
+	PhysBody* piston1;
+	PhysBody* piston2;
 	b2RevoluteJoint* FlipperLJoint;
 	b2RevoluteJoint* FlipperRJoint;
+	b2PrismaticJoint* PistonJoint;
 //	p2List<PhysBody*> circles;
 //	p2List<PhysBody*> boxes;
 //	p2List<PhysBody*> ricks;

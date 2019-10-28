@@ -226,6 +226,8 @@ bool ModuleScenePinball::Start()
 	Target1 = App->physics->CreatePolygon(445, 495, target1, 16,"Target1", b2_staticBody);
 	Target2 = App->physics->CreatePolygon(675, 535, target2, 16,"Target2", b2_staticBody);
 
+	piston1 = App->physics->CreateRectangle(830, 1100, 30, 15, "piston1", b2_staticBody);
+	piston2 = App->physics->CreateRectangle(830, 1090, 30, 30, "piston1", b2_dynamicBody);
 	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, 1155, SCREEN_WIDTH, 50,"sensor");
 
 	rotAxisL->listener = this;
@@ -247,7 +249,7 @@ bool ModuleScenePinball::Start()
 
 	FlipperLJoint = App->physics->CreateRevoluteJoint(FlipperL->body, rotAxisL->body, 20, 24, 0, 40);
 	FlipperRJoint = App->physics->CreateRevoluteJoint(FlipperR->body, rotAxisR->body, 83, 19, -40, 0);
-	
+	PistonJoint = App->physics->CreatePrismaticJoint(piston1->body, piston2->body, 0, 0, 0, 100);
 	return ret;
 }
 
@@ -285,6 +287,11 @@ update_status ModuleScenePinball::Update()
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT) 
 	{
 		FlipperRJoint->SetMotorSpeed(-1000 * DEGTORAD);
+	}
+	PistonJoint->EnableMotor(false);
+	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+	{
+		PistonJoint->EnableMotor(true);
 	}
 
 	p2SString title("Pinball_Dreams Box2D  mouse.x:%d mouse.y %d",
