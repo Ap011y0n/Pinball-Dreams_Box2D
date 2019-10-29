@@ -24,6 +24,8 @@ bool ModuleScenePinball::Start()
 	bool ret = true;
 	board = App->textures->Load("pinball/pinball_board.png");
 	fliper_Left = App->textures->Load("pinball/fliper_Left.png");
+	fliper_Right = App->textures->Load("pinball/fliper_Right.png");
+	balltxt = App->textures->Load("pinball/ball.png");
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -264,30 +266,36 @@ bool ModuleScenePinball::CleanUp()
 // Update: draw background
 update_status ModuleScenePinball::Update()
 {
-	float c;
-	int a, b;
+	Ball_rotation = ball->GetRotation();
+
+	Flipper_L_rotation = FlipperL->GetRotation();
+	FlipperL->GetPosition(Flipper_L_positon_x, Flipper_L_positon_y);
+
+	Flipper_R_rotation = FlipperR->GetRotation();
+	FlipperR->GetPosition(Flipper_R_positon_x, Flipper_R_positon_y);
+
 
 	int x, y;
-
-	c = FlipperL->GetRotation();
-	FlipperL->GetPosition(a, b);
 	ball->GetPosition(x, y);
 
 	FlipperLJoint->SetMotorSpeed(-1000 * DEGTORAD);
-	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) 
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
 		FlipperLJoint->SetMotorSpeed(1000 * DEGTORAD);
-		FlipperL->GetPosition(a, b);
-		c = FlipperL->GetRotation();
+		FlipperL->GetPosition(Flipper_L_positon_x, Flipper_L_positon_y);
+		Flipper_L_rotation = FlipperL->GetRotation();
 
 	}
-	
-	
+
+
 	FlipperRJoint->SetMotorSpeed(1000 * DEGTORAD);
-	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT) 
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
 		FlipperRJoint->SetMotorSpeed(-1000 * DEGTORAD);
+		FlipperR->GetPosition(Flipper_R_positon_x, Flipper_R_positon_y);
+		Flipper_R_rotation = FlipperR->GetRotation();
 	}
+
 	PistonJoint->EnableMotor(false);
 	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 	{
@@ -302,7 +310,9 @@ update_status ModuleScenePinball::Update()
 
 	//All renders
 	App->renderer->Blit(board, 0, 0, NULL);
-	App->renderer->Blit(fliper_Left, (a+5),(b+5), NULL, 1.0f, c, 0, 0);
+	App->renderer->Blit(fliper_Left, (Flipper_L_positon_x+5),(Flipper_L_positon_y+5), NULL, 1.0f, Flipper_L_rotation, 0, 0);
+	App->renderer->Blit(fliper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y + 3), NULL, 1.0f, Flipper_R_rotation, -5, 0);
+	App->renderer->Blit(balltxt, x, y, NULL, 1.0f, Ball_rotation, 15, 15);
 	return UPDATE_CONTINUE;
 }
 

@@ -50,10 +50,26 @@ public:
 
 	SDL_Texture* board;
 	SDL_Texture* fliper_Left;
+	SDL_Texture* fliper_Right;
+	SDL_Texture* balltxt;
 /*	SDL_Texture* box;
 	SDL_Texture* rick;
 	uint bonus_fx;
 	p2Point<int> ray;
 	bool ray_on;*/
+
+	// Constants for blit flipper Right
+	float Flipper_R_rotation = 0;
+	int Flipper_R_positon_x = 0;
+	int Flipper_R_positon_y = 0;
+
+	//Constants for blit fliper Left
+	float Flipper_L_rotation = 0;
+	int Flipper_L_positon_x = 0;
+	int Flipper_L_positon_y = 0;
+
+	//Constants for blit ball
+	float Ball_rotation = 0;
+
 };
 
