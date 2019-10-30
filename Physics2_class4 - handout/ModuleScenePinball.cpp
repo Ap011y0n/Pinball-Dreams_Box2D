@@ -127,21 +127,21 @@ bool ModuleScenePinball::Start()
 	187, 47
 	};
 	int slingshotL[16] = {
-		74, 10,
-		71, 15,
-		69, 123,
-		71, 128,
-		122, 149,
-		136, 146,
-		140, 136,
-		82, 10
+	74, 10,
+	71, 15,
+	69, 123,
+	71, 128,
+	122, 149,
+	132, 146,
+	135, 140,
+	78, 14
 	};
 	int slingshotR[16] = {
-	126, 12,
-	114, 20,
-	63, 139,
-	64, 147,
-	79, 152,
+	127, 14,
+	117, 24,
+	67, 142,
+	69, 150,
+	82, 151,
 	129, 135,
 	134, 126,
 	133, 20
@@ -219,8 +219,8 @@ bool ModuleScenePinball::Start()
 
 	rotAxisL = App->physics->CreateCircle(358, 1040, 10,"rotAxisL", b2_staticBody);
 	rotAxisR = App->physics->CreateCircle(597, 1040, 10,"rotAxisR", b2_staticBody);
-	FlipperL = App->physics->CreatePolygon(358, 1040, Flipper_L, 16);
-	FlipperR = App->physics->CreatePolygon(510, 1023, Flipper_R, 16);
+	FlipperL = App->physics->CreatePolygon(358, 1040, Flipper_L, 16, "Flipper_L");
+	FlipperR = App->physics->CreatePolygon(510, 1023, Flipper_R, 16, "Flipper_L");
 	SlingshotL = App->physics->CreatePolygon(200, 820, slingshotL, 16,"SlingshotL", b2_staticBody);
 	SlingshotR = App->physics->CreatePolygon(580, 810, slingshotR, 16,"SlingshotR", b2_staticBody);
 	Bumper1 = App->physics->CreateCircle(433, 350, 50,"Bumper1", b2_staticBody);
@@ -228,30 +228,25 @@ bool ModuleScenePinball::Start()
 	Target1 = App->physics->CreatePolygon(445, 495, target1, 16,"Target1", b2_staticBody);
 	Target2 = App->physics->CreatePolygon(675, 535, target2, 16,"Target2", b2_staticBody);
 
-	piston1 = App->physics->CreateRectangle(830, 1100, 30, 15, "piston1", b2_staticBody);
-	piston2 = App->physics->CreateRectangle(830, 1090, 30, 30, "piston1", b2_dynamicBody);
+	kickerBase = App->physics->CreateRectangle(830, 1100, 30, 15, "piston1", b2_staticBody);
+	kicker = App->physics->CreateRectangle(830, 1090, 30, 30, "piston2", b2_dynamicBody);
 	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, 1155, SCREEN_WIDTH, 50,"sensor");
+	SSLPiston = App->physics->CreateRectangle(300, 920, 150, 5, "SSLPiston");
+	SSRPiston = App->physics->CreateRectangle(690, 920, 150, 5, "SSRPiston");
+	SSLPistonBase = App->physics->CreateRectangle(295, 920, 15, 15, "SSLPistonBase", b2_staticBody);
+	SSRPistonBase = App->physics->CreateRectangle(682, 920, 15, 15, "SSRPistonBase", b2_staticBody);
 
-	rotAxisL->listener = this;
-	rotAxisR->listener = this;
-	FlipperL->listener = this;
-	FlipperR->listener = this;
-	SlingshotL->listener = this;
-	SlingshotR->listener = this;
-	Bumper1->listener = this;
-	Bumper2->listener = this;
-	Target1->listener = this;
-	Target2->listener = this;
-	sensor->listener = this;
 
 	ball = App->physics->CreateCircle(810, 1070, 15, "ball", b2_dynamicBody, 0.4);
 	
-	//ball->listener = this;
-
+	ball->listener = this;
 
 	FlipperLJoint = App->physics->CreateRevoluteJoint(FlipperL->body, rotAxisL->body, 20, 24, 0, 40);
 	FlipperRJoint = App->physics->CreateRevoluteJoint(FlipperR->body, rotAxisR->body, 83, 19, -40, 0);
-	PistonJoint = App->physics->CreatePrismaticJoint(piston1->body, piston2->body, 0, 0, 0, 100);
+	KickerJoint = App->physics->CreatePrismaticJoint(kickerBase->body, kicker->body, 0, 0, 0, 100,1000);
+	SSLJoint = App->physics->CreatePrismaticJoint(SSLPistonBase->body, SSLPiston->body, 0, -10, 20, 30, 400, 66, 0.5 ,0.5);
+	SSRJoint = App->physics->CreatePrismaticJoint(SSRPistonBase->body, SSRPiston->body, 0, -10, 20, 30, 400, -66, -0.5, 0.5);
+
 	return ret;
 }
 
@@ -296,11 +291,13 @@ update_status ModuleScenePinball::Update()
 		Flipper_R_rotation = FlipperR->GetRotation();
 	}
 
-	PistonJoint->EnableMotor(false);
+	KickerJoint->EnableMotor(false);
 	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 	{
-		PistonJoint->EnableMotor(true);
+		KickerJoint->EnableMotor(true);
 	}
+	if(SSRJoint->IsMotorEnabled())SSRJoint->EnableMotor(false);
+	if (SSLJoint->IsMotorEnabled())SSLJoint->EnableMotor(false);
 
 	p2SString title("Pinball_Dreams Box2D  mouse.x:%d mouse.y %d",
 	App->input->GetMouseX(), App->input->GetMouseY());
@@ -325,7 +322,9 @@ void ModuleScenePinball::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if (bodyA)
 	{
-		LOG("%s", bodyA->name);
+		if (bodyA->name == "SSRPiston")SSRJoint->EnableMotor(true);
+		if (bodyA->name == "SSLPiston")SSLJoint->EnableMotor(true);
+		
 		for (b2Fixture* f = bodyA->body->GetFixtureList(); f; f = f->GetNext()) {
 			if (f->IsSensor()) {
 				//LOG("Sensor A");
@@ -337,7 +336,9 @@ void ModuleScenePinball::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if (bodyB)
 	{
-		LOG("%s", bodyB->name);
+		if (bodyB->name == "SSRPiston")SSRJoint->EnableMotor(true);
+		if (bodyB->name == "SSLPiston")SSLJoint->EnableMotor(true);
+		
 		for (b2Fixture* f = bodyB->body->GetFixtureList(); f; f = f->GetNext()) {
 			if (f->IsSensor()) {
 				//LOG("Sensor B");
