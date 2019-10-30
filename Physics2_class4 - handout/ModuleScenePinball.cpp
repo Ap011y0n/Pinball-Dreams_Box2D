@@ -321,9 +321,11 @@ update_status ModuleScenePinball::Update()
 
 	//All renders
 	App->renderer->Blit(board, 0, 0, NULL);
-	App->renderer->Blit(flipper_Left, (Flipper_L_positon_x+5),(Flipper_L_positon_y+5), NULL, 1.0f, Flipper_L_rotation, 0, 0);
-	App->renderer->Blit(flipper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y + 3), NULL, 1.0f, Flipper_R_rotation, -5, 0);
-	App->renderer->Blit(balltxt, x, y, NULL, 1.0f, 1*Ball_rotation, 15, 15);
+
+	App->renderer->Blit(fliper_Left, (Flipper_L_positon_x+5),(Flipper_L_positon_y+10), NULL, 1.0f, Flipper_L_rotation, -5, -5);
+	App->renderer->Blit(fliper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y +5), NULL, 1.0f, Flipper_R_rotation, -1,0);
+	App->renderer->Blit(balltxt, x, y, NULL, 1.0f, Ball_rotation, 15, 15);
+
 	return UPDATE_CONTINUE;
 }
 
