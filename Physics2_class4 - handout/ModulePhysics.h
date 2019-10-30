@@ -47,7 +47,7 @@ public:
 
 	PhysBody* CreateCircle(int x, int y, int radius, char* name = "", b2BodyType type = b2_dynamicBody, float restitution = 0.0f);
 	PhysBody* CreateRectangle(int x, int y, int width, int height, char* name = "", b2BodyType type = b2_dynamicBody);
-	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, char* name = "", b2BodyType type = b2_staticBody);
+	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, char* name = "", int angle = 0, b2BodyType type = b2_staticBody);
 	PhysBody* CreateChain(int x, int y, int* points, int size, char* name = "", b2BodyType type = b2_staticBody);
 	PhysBody* CreatePolygon(int x, int y, int* points, int size, char* name = "", b2BodyType type = b2_dynamicBody);
 	b2RevoluteJoint* CreateRevoluteJoint(b2Body* bodyA, b2Body* bodyB, int AnchorX, int AnchorY, int lowerAngle, int upperAngle);

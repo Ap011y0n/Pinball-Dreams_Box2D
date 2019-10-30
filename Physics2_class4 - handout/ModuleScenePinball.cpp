@@ -23,8 +23,8 @@ bool ModuleScenePinball::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 	board = App->textures->Load("pinball/pinball_board.png");
-	fliper_Left = App->textures->Load("pinball/fliper_Left.png");
-	fliper_Right = App->textures->Load("pinball/fliper_Right.png");
+	flipper_Left = App->textures->Load("pinball/fliper_Left.png");
+	flipper_Right = App->textures->Load("pinball/fliper_Right.png");
 	balltxt = App->textures->Load("pinball/ball.png");
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
@@ -217,6 +217,10 @@ bool ModuleScenePinball::Start()
 	App->physics->CreateChain(613, 183, lane, 24);
 	App->physics->CreateChain(542, 192, lane, 24);
 
+	//Ball
+	ball = App->physics->CreateCircle(810, 1070, 15, "ball", b2_dynamicBody, 0.4);
+	//ball = App->physics->CreateCircle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 15, "ball", b2_staticBody, 0.4);
+	//map components
 	rotAxisL = App->physics->CreateCircle(358, 1040, 10,"rotAxisL", b2_staticBody);
 	rotAxisR = App->physics->CreateCircle(597, 1040, 10,"rotAxisR", b2_staticBody);
 	FlipperL = App->physics->CreatePolygon(358, 1040, Flipper_L, 16, "Flipper_L");
@@ -228,24 +232,51 @@ bool ModuleScenePinball::Start()
 	Target1 = App->physics->CreatePolygon(445, 495, target1, 16,"Target1", b2_staticBody);
 	Target2 = App->physics->CreatePolygon(675, 535, target2, 16,"Target2", b2_staticBody);
 
+	//Pistons
 	kickerBase = App->physics->CreateRectangle(830, 1100, 30, 15, "piston1", b2_staticBody);
 	kicker = App->physics->CreateRectangle(830, 1090, 30, 30, "piston2", b2_dynamicBody);
-	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, 1155, SCREEN_WIDTH, 50,"sensor");
 	SSLPiston = App->physics->CreateRectangle(300, 920, 150, 5, "SSLPiston");
 	SSRPiston = App->physics->CreateRectangle(690, 920, 150, 5, "SSRPiston");
 	SSLPistonBase = App->physics->CreateRectangle(295, 920, 15, 15, "SSLPistonBase", b2_staticBody);
 	SSRPistonBase = App->physics->CreateRectangle(682, 920, 15, 15, "SSRPistonBase", b2_staticBody);
 
-
-	ball = App->physics->CreateCircle(810, 1070, 15, "ball", b2_dynamicBody, 0.4);
+	//Sensors
+	DeathSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, 1155, SCREEN_WIDTH, 50, "DeathSensor");
 	
-	ball->listener = this;
+	ignition1 = App->physics->CreateRectangleSensor(471, 534, 30, 5, "ignition1", 28);
+	ignition2 = App->physics->CreateRectangleSensor(507, 553, 30, 5, "ignition2", 28);
+	ignition3 = App->physics->CreateRectangleSensor(545, 571, 30, 5, "ignition3", 28);
 
+	sun = App->physics->CreateRectangleSensor(753, 620, 30, 100, "sun", 25);
+
+	F_sensor = App->physics->CreateRectangleSensor(218, 575, 37, 37, "F_sensor");
+	U_sensor = App->physics->CreateRectangleSensor(218, 622, 37, 37, "U_sensor");
+	E_sensor = App->physics->CreateRectangleSensor(218, 669, 37, 37, "E_sensor");
+	L_sensor = App->physics->CreateRectangleSensor(218, 716, 37, 37, "L_sensor");
+
+	sensor500 = App->physics->CreateRectangleSensor(306, 293, 50, 10, "sensor500", -45);
+	sensor502 = App->physics->CreateRectangleSensor(346, 253, 50, 10, "sensor502", -45);
+																 
+	W_sensor = App->physics->CreateRectangleSensor(459, 180, 37, 37, "W_sensor");
+	A_sensor = App->physics->CreateRectangleSensor(525, 198, 37, 37, "A_sensor");
+	R_sensor = App->physics->CreateRectangleSensor(595, 199, 37, 37, "R_sensor");
+	P_sensor = App->physics->CreateRectangleSensor(666, 185, 37, 37, "P_sensor");
+
+	L2_sensor = App->physics->CreateRectangleSensor(734, 265, 5, 30, "L2_sensor", -10);
+	I_sensor = App->physics->CreateRectangleSensor( 744, 308, 5, 30, "I_sensor" , -10);
+	G_sensor = App->physics->CreateRectangleSensor( 756, 351, 5, 30, "G_sensor" , -10);
+	H_sensor = App->physics->CreateRectangleSensor( 767, 394, 5, 30, "H_sensor" , -10);
+	T_sensor = App->physics->CreateRectangleSensor( 778, 437, 5, 30, "T_sensor" , -10);
+	
+
+	//joints
 	FlipperLJoint = App->physics->CreateRevoluteJoint(FlipperL->body, rotAxisL->body, 20, 24, 0, 40);
 	FlipperRJoint = App->physics->CreateRevoluteJoint(FlipperR->body, rotAxisR->body, 83, 19, -40, 0);
 	KickerJoint = App->physics->CreatePrismaticJoint(kickerBase->body, kicker->body, 0, 0, 0, 100,1000);
 	SSLJoint = App->physics->CreatePrismaticJoint(SSLPistonBase->body, SSLPiston->body, 0, -10, 20, 30, 400, 66, 0.5 ,0.5);
 	SSRJoint = App->physics->CreatePrismaticJoint(SSRPistonBase->body, SSRPiston->body, 0, -10, 20, 30, 400, -66, -0.5, 0.5);
+
+	ball->listener = this;
 
 	return ret;
 }
@@ -274,30 +305,13 @@ update_status ModuleScenePinball::Update()
 	ball->GetPosition(x, y);
 
 	FlipperLJoint->SetMotorSpeed(-1000 * DEGTORAD);
-	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-	{
-		FlipperLJoint->SetMotorSpeed(1000 * DEGTORAD);
-		FlipperL->GetPosition(Flipper_L_positon_x, Flipper_L_positon_y);
-		Flipper_L_rotation = FlipperL->GetRotation();
-
-	}
-
-
 	FlipperRJoint->SetMotorSpeed(1000 * DEGTORAD);
-	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-	{
-		FlipperRJoint->SetMotorSpeed(-1000 * DEGTORAD);
-		FlipperR->GetPosition(Flipper_R_positon_x, Flipper_R_positon_y);
-		Flipper_R_rotation = FlipperR->GetRotation();
-	}
-
-	KickerJoint->EnableMotor(false);
-	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-	{
-		KickerJoint->EnableMotor(true);
-	}
+	
+	if (KickerJoint->IsMotorEnabled())KickerJoint->EnableMotor(false);
 	if(SSRJoint->IsMotorEnabled())SSRJoint->EnableMotor(false);
 	if (SSLJoint->IsMotorEnabled())SSLJoint->EnableMotor(false);
+
+	Input();
 
 	p2SString title("Pinball_Dreams Box2D  mouse.x:%d mouse.y %d",
 	App->input->GetMouseX(), App->input->GetMouseY());
@@ -307,9 +321,9 @@ update_status ModuleScenePinball::Update()
 
 	//All renders
 	App->renderer->Blit(board, 0, 0, NULL);
-	App->renderer->Blit(fliper_Left, (Flipper_L_positon_x+5),(Flipper_L_positon_y+5), NULL, 1.0f, Flipper_L_rotation, 0, 0);
-	App->renderer->Blit(fliper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y + 3), NULL, 1.0f, Flipper_R_rotation, -5, 0);
-	App->renderer->Blit(balltxt, x, y, NULL, 1.0f, Ball_rotation, 15, 15);
+	App->renderer->Blit(flipper_Left, (Flipper_L_positon_x+5),(Flipper_L_positon_y+5), NULL, 1.0f, Flipper_L_rotation, 0, 0);
+	App->renderer->Blit(flipper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y + 3), NULL, 1.0f, Flipper_R_rotation, -5, 0);
+	App->renderer->Blit(balltxt, x, y, NULL, 1.0f, 1*Ball_rotation, 15, 15);
 	return UPDATE_CONTINUE;
 }
 
@@ -322,9 +336,6 @@ void ModuleScenePinball::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if (bodyA)
 	{
-		if (bodyA->name == "SSRPiston")SSRJoint->EnableMotor(true);
-		if (bodyA->name == "SSLPiston")SSLJoint->EnableMotor(true);
-		
 		for (b2Fixture* f = bodyA->body->GetFixtureList(); f; f = f->GetNext()) {
 			if (f->IsSensor()) {
 				//LOG("Sensor A");
@@ -338,10 +349,16 @@ void ModuleScenePinball::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		if (bodyB->name == "SSRPiston")SSRJoint->EnableMotor(true);
 		if (bodyB->name == "SSLPiston")SSLJoint->EnableMotor(true);
+		if (bodyB->name == "Bumper1" || bodyB->name == "Bumper2") {
+			int x1 = 0, x2 = 0;
+			b2Vec2 vect(x1, x2);
+			ball->GetPosition(x1, x2);
 		
+			ball->body->ApplyLinearImpulse(b2Vec2(2, 2), vect, true);
+		}
 		for (b2Fixture* f = bodyB->body->GetFixtureList(); f; f = f->GetNext()) {
 			if (f->IsSensor()) {
-				//LOG("Sensor B");
+				getSensor(bodyB->name);
 			}
 		}
 		bodyB->GetPosition(x, y);
@@ -355,4 +372,97 @@ void ModuleScenePinball::MoveCamera() {
 	ball->GetPosition(x, y);
 //	LOG("camera.y = %d", App->renderer->camera.y);
 	App->renderer->camera.y =-1*y +SCREEN_HEIGHT/2;
+}
+void ModuleScenePinball::Input() {
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+	{
+		FlipperLJoint->SetMotorSpeed(1000 * DEGTORAD);
+		FlipperL->GetPosition(Flipper_L_positon_x, Flipper_L_positon_y);
+		Flipper_L_rotation = FlipperL->GetRotation();
+
+	}
+	
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+	{
+		FlipperRJoint->SetMotorSpeed(-1000 * DEGTORAD);
+		FlipperR->GetPosition(Flipper_R_positon_x, Flipper_R_positon_y);
+		Flipper_R_rotation = FlipperR->GetRotation();
+	}
+	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+	{
+		KickerJoint->EnableMotor(true);
+		LOG("Que cony");
+	}
+	/*if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN) {
+		LOG("Current points %d",currentpts += 50);
+	}
+	if (App->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN) {
+		LOG("Multiplier: %d", ++currentpts.multipilier)
+	}
+	*/
+}
+
+//Receives the name of a sensor, then starts a determinate proces depending of it
+void ModuleScenePinball::getSensor(char* name) {
+	if (name == "DeathSensor") {
+
+	}
+	if (name == "ignition1") {
+
+	}
+	if (name == "ignition2") {
+
+	}
+	if (name == "ignition3") {
+
+	}
+	if (name == "sun") {
+
+	}
+	if (name == "F_sensor") {
+
+	}
+	if (name == "U_sensor") {
+
+	}
+	if (name == "E_sensor") {
+
+	}
+	if (name == "L_sensor") {
+
+	}
+	if (name == "sensor500") {
+
+	}
+	if (name == "sensor502") {
+
+	}
+	if (name == "W_sensor") {
+		currentpts.multipilier = 2;
+	}
+	if (name == "A_sensor") {
+		currentpts.multipilier = 3;
+	}
+	if (name == "R_sensor") {
+		currentpts.multipilier = 4;
+	}
+	if (name == "P_sensor") {
+		currentpts.multipilier = 6;
+	}
+	if (name == "L2_sensor") {
+
+	}
+	if (name == "I_sensor") {
+
+	}
+	if (name == "G_sensor") {
+
+	}
+	if (name == "H_sensor") {
+
+	}
+	if (name == "T_sensor") {
+
+	}
+
 }

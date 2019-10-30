@@ -67,13 +67,13 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, char* name, b2Bo
 	b2BodyDef body;
 	body.type = type;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
-	
+	body.gravityScale = 1,2;
 	b2Body* b = world->CreateBody(&body);
-
 	b2CircleShape shape;
 
 	shape.m_radius = PIXEL_TO_METERS(radius);
 	b2FixtureDef fixture;
+	fixture.friction = 0.1;
 	fixture.shape = &shape;
 	fixture.density = 1.0f;
 	fixture.restitution = restitution;
@@ -113,14 +113,15 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, ch
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height, char* name, b2BodyType type)
+PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height, char* name, int angle, b2BodyType type)
 {
 	b2BodyDef body;
 	body.type = type;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	body.angle = angle * DEGTORAD;
 
 	b2Body* b = world->CreateBody(&body);
-
+	
 	b2PolygonShape box;
 	box.SetAsBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
 
@@ -128,6 +129,7 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 	fixture.shape = &box;
 	fixture.density = 1.0f;
 	fixture.isSensor = true;
+
 
 	b->CreateFixture(&fixture);
 
@@ -210,6 +212,7 @@ PhysBody*  ModulePhysics::CreatePolygon(int x, int y, int* points, int size, cha
 	return pbody;
 }
 
+//methode to create revolute joints
 b2RevoluteJoint*  ModulePhysics::CreateRevoluteJoint(b2Body* bodyA, b2Body* bodyB, int AnchorX, int AnchorY, int lowerAngle, int upperAngle) {
 	b2RevoluteJointDef revoluteJointDef;
 	
@@ -231,6 +234,7 @@ b2RevoluteJoint*  ModulePhysics::CreateRevoluteJoint(b2Body* bodyA, b2Body* body
 return revolutejoint;
 }
 
+//methode to create prismatic joints
 b2PrismaticJoint* ModulePhysics::CreatePrismaticJoint(b2Body* bodyA, b2Body* bodyB, int AnchorX, int AnchorY, int lowerTranslation, int upperTranslation, int maxforce, int referenceAngle, float directionx, float directiony) {
 	b2PrismaticJointDef prismaticJointDef;
 
@@ -280,6 +284,7 @@ update_status ModulePhysics::PostUpdate()
 				{
 					b2CircleShape* shape = (b2CircleShape*)f->GetShape();
 					b2Vec2 pos = f->GetBody()->GetPosition();
+					//added +camera.x and +camera.y, to avoid conflict between visual representation and circles when moving camera
 					App->renderer->DrawCircle(METERS_TO_PIXELS(pos.x) + App->renderer->camera.x, METERS_TO_PIXELS(pos.y) + App->renderer->camera.y, METERS_TO_PIXELS(shape->m_radius), 255, 255, 255);
 				}
 				break;

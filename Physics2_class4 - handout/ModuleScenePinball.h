@@ -7,6 +7,24 @@
 class PhysBody;
 class b2RevoluteJoint;
 class b2PrismaticJoint;
+class punctuation
+{
+public:
+	uint value = 0u;
+	uint multipilier = 1u;
+	punctuation()
+	{}
+	~punctuation()
+	{}
+	//operators
+	int operator+= (const int add) 
+	{
+		int ret = add * multipilier + value;
+		value = ret;
+		return ret;
+	}
+
+};
 
 class ModuleScenePinball : public Module
 {
@@ -19,10 +37,15 @@ public:
 	bool CleanUp();
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
 	void MoveCamera();
-private:
+	void Input();
+	void getSensor(char* name);
 
+private:
 public:
+	punctuation currentpts;
+
 	PhysBody* ball;
+
 	PhysBody* rotAxisL;
 	PhysBody* rotAxisR;
 	PhysBody* FlipperL;
@@ -34,7 +57,7 @@ public:
 	PhysBody* Target1;
 	PhysBody* Target2;
 	// sensor PhysBody* Hole;
-	PhysBody* sensor;
+
 	PhysBody* kickerBase;
 	PhysBody* kicker;
 	PhysBody* SSLPiston;
@@ -46,6 +69,33 @@ public:
 	b2PrismaticJoint* KickerJoint;
 	b2PrismaticJoint* SSLJoint;
 	b2PrismaticJoint* SSRJoint;
+
+	PhysBody* DeathSensor;
+	PhysBody* ignition1;
+	PhysBody* ignition2;
+	PhysBody* ignition3;
+
+	PhysBody* sun;
+
+	PhysBody* F_sensor;
+	PhysBody* U_sensor;
+	PhysBody* E_sensor;
+	PhysBody* L_sensor;
+
+	PhysBody* sensor500;
+	PhysBody* sensor502;
+
+	PhysBody* W_sensor;
+	PhysBody* A_sensor;
+	PhysBody* R_sensor;
+	PhysBody* P_sensor;
+
+	PhysBody* L2_sensor;
+	PhysBody* I_sensor;
+	PhysBody* G_sensor;
+	PhysBody* H_sensor;
+	PhysBody* T_sensor;
+
 //	p2List<PhysBody*> circles;
 //	p2List<PhysBody*> boxes;
 //	p2List<PhysBody*> ricks;
@@ -55,8 +105,8 @@ public:
 */
 
 	SDL_Texture* board;
-	SDL_Texture* fliper_Left;
-	SDL_Texture* fliper_Right;
+	SDL_Texture* flipper_Left;
+	SDL_Texture* flipper_Right;
 	SDL_Texture* balltxt;
 /*	SDL_Texture* box;
 	SDL_Texture* rick;
