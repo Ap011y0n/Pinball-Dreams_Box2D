@@ -25,9 +25,14 @@ bool ModuleScenePinball::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 	warp = Wlight = Alight = Rlight = Plight = Wactive = Aactive = Ractive = Pactive = false;
-	Lactive = Iactive = Gactive = Hactive = Tactive = false; 
+	L2active = Iactive = Gactive = Hactive = Tactive = false; 
 	lightcounter = 1;
-	
+	FiveH1 = FiveH2 = false;
+	Factive = Uactive = Eactive = Lactive = false;
+	Sun1 = Sun2 = Sun3 = false;
+
+
+
 	board = App->textures->Load("pinball/pinball_board_2.png");
 	flipper_Left = App->textures->Load("pinball/fliper_Left.png");
 	flipper_Right = App->textures->Load("pinball/fliper_Right.png");
@@ -333,7 +338,7 @@ update_status ModuleScenePinball::Update()
 	App->renderer->Blit(balltxt, x, y, NULL, 1.0f, Ball_rotation, 15, 15);
 	
 	//Puntuation
-	currentpts.value = currentpts.value+100;
+	
 	sprintf_s(text, 10, "%d",currentpts.value);
 	if (currentpts.value < 9) {
 		puntuation_x = 800;
@@ -504,7 +509,7 @@ void ModuleScenePinball::Warp(int index) {
 //receives a light bool, and activates it
 void ModuleScenePinball::Light(bool &active) {
 	active = true;
-	if (Lactive && Iactive && Gactive && Hactive && Tactive) {
+	if (L2active && Iactive && Gactive && Hactive && Tactive) {
 		if (lightcounter == 3) {
 			LOG("contador %d", lightcounter);
 			lightcounter++;
@@ -519,8 +524,29 @@ void ModuleScenePinball::Light(bool &active) {
 		}
 		
 		if (lightcounter == 4)lightcounter = 1;
-		Lactive = Iactive = Gactive = Hactive = Tactive = false;
+		L2active = Iactive = Gactive = Hactive = Tactive = false;
 		
+	}
+}
+void ModuleScenePinball::FiveHpts(bool &active) {
+	active = true;
+	if (FiveH1 && FiveH2) {
+		FiveH1 = FiveH2 = false;
+		currentpts += 25000;
+	}
+}
+void ModuleScenePinball::SunRun() {
+	if (Sun2)Sun3 = true;
+	if (Sun1)Sun2 = true;
+	Sun1 = true;
+	
+}
+void ModuleScenePinball::Fuel(bool &active) {
+	active = true;
+	if (Factive && Uactive && Eactive && Lactive) {
+		Factive = Uactive = Eactive = Lactive = false;
+		//CollectFuel
+		LOG("CollectFuel");
 	}
 }
 
@@ -539,25 +565,25 @@ void ModuleScenePinball::getSensor(char* name) {
 
 	}
 	if (name == "sun") {
-
+		SunRun();
 	}
 	if (name == "F_sensor") {
-
+		Fuel(Factive);
 	}
 	if (name == "U_sensor") {
-
+		Fuel(Uactive);
 	}
 	if (name == "E_sensor") {
-
+		Fuel(Eactive);
 	}
 	if (name == "L_sensor") {
-
+		Fuel(Lactive);
 	}
 	if (name == "sensor500") {
-
+		FiveHpts(FiveH1);
 	}
 	if (name == "sensor502") {
-
+		FiveHpts(FiveH2);
 	}
 	if (name == "W_sensor") {
 		Warp(1);
@@ -572,7 +598,7 @@ void ModuleScenePinball::getSensor(char* name) {
 		Warp(4);
 	}
 	if (name == "L2_sensor") {
-		Light(Lactive);
+		Light(L2active);
 	}
 	if (name == "I_sensor") {
 		Light(Iactive);

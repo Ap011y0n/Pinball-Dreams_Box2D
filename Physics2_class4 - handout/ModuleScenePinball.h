@@ -41,6 +41,9 @@ public:
 	void getSensor(char* name);
 	void Warp(int iterator = 0);
 	void Light(bool &active);
+	void FiveHpts(bool &active);
+	void Fuel(bool &active);
+	void SunRun();
 
 private:
 	punctuation currentpts;
@@ -121,10 +124,12 @@ private:
 
 	//Sensor bools
 	bool warp, Wlight, Alight, Rlight, Plight, Wactive, Aactive, Ractive, Pactive;
-	bool Lactive, Iactive, Gactive, Hactive, Tactive;
+	bool L2active, Iactive, Gactive, Hactive, Tactive;
 	uint lightcounter = 1u;
+	bool FiveH1, FiveH2;
+	bool Factive, Uactive, Eactive, Lactive;
+	bool Sun1, Sun2, Sun3;
 
-	
 
 	uint puntuation;
 	int puntuation_x;
