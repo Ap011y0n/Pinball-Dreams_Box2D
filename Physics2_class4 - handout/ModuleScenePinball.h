@@ -108,8 +108,10 @@ private:
 	SDL_Texture* flipper_Left;
 	SDL_Texture* flipper_Right;
 	SDL_Texture* balltxt;
+	SDL_Texture* bar_points;
 
-		// Constants for blit flipper Right
+
+	// Constants for blit flipper Right
 	float Flipper_R_rotation = 0;
 	int Flipper_R_positon_x = 0;
 	int Flipper_R_positon_y = 0;
@@ -122,6 +124,8 @@ private:
 	//Constants for blit ball
 	float Ball_rotation = 0;
 
+	//Constant for blit puntuation_bar
+	int puntuation_bar_max;
 	//Puntuation variables
 	int font_puntuation = -1;
 	char text[10];

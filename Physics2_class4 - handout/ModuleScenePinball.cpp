@@ -39,6 +39,7 @@ bool ModuleScenePinball::Start()
 	flipper_Left = App->textures->Load("pinball/fliper_Left.png");
 	flipper_Right = App->textures->Load("pinball/fliper_Right.png");
 	balltxt = App->textures->Load("pinball/ball.png");
+	bar_points= App->textures->Load("pinball/bar_points.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -317,6 +318,7 @@ update_status ModuleScenePinball::Update()
 
 	int x, y;
 	ball->GetPosition(x, y);
+	puntuation_bar_max = y - 386;
 
 	FlipperLJoint->SetMotorSpeed(-1000 * DEGTORAD);
 	FlipperRJoint->SetMotorSpeed(1000 * DEGTORAD);
@@ -324,7 +326,7 @@ update_status ModuleScenePinball::Update()
 	if (KickerJoint->IsMotorEnabled())KickerJoint->EnableMotor(false);
 	if(SSRJoint->IsMotorEnabled())SSRJoint->EnableMotor(false);
 	if (SSLJoint->IsMotorEnabled())SSLJoint->EnableMotor(false);
-
+	if (puntuation_bar_max <= -2) {puntuation_bar_max = -2;}
 	Input();
 
 	p2SString title("Pinball_Dreams Box2D  mouse.x:%d mouse.y %d",
@@ -339,7 +341,8 @@ update_status ModuleScenePinball::Update()
 	App->renderer->Blit(flipper_Left, (Flipper_L_positon_x+5),(Flipper_L_positon_y+10), NULL, 1.0f, Flipper_L_rotation, -5, -5);
 	App->renderer->Blit(flipper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y +5), NULL, 1.0f, Flipper_R_rotation, -1,0);
 	App->renderer->Blit(balltxt, x, y, NULL, 1.0f, Ball_rotation, 15, 15);
-	
+	App->renderer->Blit(bar_points,142, puntuation_bar_max, NULL, 1.0f, 0, 0, 0);
+
 	//Puntuation
 	currentpts.value = currentpts.value + 10000;
 	sprintf_s(text, 10, "%d",currentpts.value);
@@ -372,7 +375,7 @@ update_status ModuleScenePinball::Update()
 		currentpts.value = 100000000;
 	}
 	
-	App->fonts->BlitText(puntuation_x,App->renderer->camera.y+4, font_puntuation,text);
+	App->fonts->BlitText(puntuation_x,2, font_puntuation,text);
 	return UPDATE_CONTINUE;
 }
 
