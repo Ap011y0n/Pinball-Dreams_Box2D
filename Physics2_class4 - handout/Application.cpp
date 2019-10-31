@@ -9,6 +9,7 @@
 #include "ModulePhysics.h"
 #include "ModuleSceneIntro.h"
 #include "ModuleScenePinball.h"
+#include "ModuleFonts.h"
 
 #include "Application.h"
 
@@ -23,7 +24,7 @@ Application::Application()
 	scene_intro = new ModuleSceneIntro(this);
 	physics = new ModulePhysics(this);
 	scene_pinball = new ModuleScenePinball(this);
-
+	fonts = new ModuleFonts(this);
 
 
 	// The order of calls is very important!
@@ -37,6 +38,7 @@ Application::Application()
 	AddModule(textures);
 	AddModule(input);
 	AddModule(audio);
+	AddModule(fonts);
 	
 	// Scenes
 	AddModule(scene_pinball);

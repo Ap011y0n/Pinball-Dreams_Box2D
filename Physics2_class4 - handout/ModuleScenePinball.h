@@ -127,5 +127,9 @@ public:
 	//Constants for blit ball
 	float Ball_rotation = 0;
 
+	//Puntuation variables
+	int font_puntuation = -1;
+	char text[10];
+	uint puntuation=1;
 };
 

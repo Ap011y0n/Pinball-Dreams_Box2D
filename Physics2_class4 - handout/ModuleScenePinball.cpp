@@ -8,6 +8,8 @@
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
 #include "ModuleWindow.h"
+#include "ModuleFonts.h"
+#include <stdio.h>
 
 ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -22,11 +24,11 @@ bool ModuleScenePinball::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
-	board = App->textures->Load("pinball/pinball_board.png");
+	board = App->textures->Load("pinball/pinball_board_2.png");
 	flipper_Left = App->textures->Load("pinball/fliper_Left.png");
 	flipper_Right = App->textures->Load("pinball/fliper_Right.png");
 	balltxt = App->textures->Load("pinball/ball.png");
-
+	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 
@@ -325,7 +327,11 @@ update_status ModuleScenePinball::Update()
 	App->renderer->Blit(flipper_Left, (Flipper_L_positon_x+5),(Flipper_L_positon_y+10), NULL, 1.0f, Flipper_L_rotation, -5, -5);
 	App->renderer->Blit(flipper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y +5), NULL, 1.0f, Flipper_R_rotation, -1,0);
 	App->renderer->Blit(balltxt, x, y, NULL, 1.0f, Ball_rotation, 15, 15);
-
+	
+	//Puntuation
+	puntuation = puntuation++;
+	sprintf_s(text, 10, "%d", puntuation);
+	App->fonts->BlitText(545,App->renderer->camera.y+4, font_puntuation,text);
 	return UPDATE_CONTINUE;
 }
 
