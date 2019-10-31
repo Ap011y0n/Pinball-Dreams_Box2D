@@ -39,11 +39,13 @@ public:
 	void MoveCamera();
 	void Input();
 	void getSensor(char* name);
-	void Warp(int iterator = 0);
+	void Warp(uint iterator);
 	void Light(bool &active);
 	void FiveHpts(bool &active);
 	void Fuel(bool &active);
+	void Ignition(bool &active);
 	void SunRun();
+	void Passage();
 
 private:
 	punctuation currentpts;
@@ -100,6 +102,8 @@ private:
 	PhysBody* H_sensor;
 	PhysBody* T_sensor;
 
+	PhysBody* Passage_Sensor;
+
 	SDL_Texture* board;
 	SDL_Texture* flipper_Left;
 	SDL_Texture* flipper_Right;
@@ -128,8 +132,11 @@ private:
 	uint lightcounter = 1u;
 	bool FiveH1, FiveH2;
 	bool Factive, Uactive, Eactive, Lactive;
-	bool Sun1, Sun2, Sun3;
-
+	bool Sun1, Sun2, Sun3, Sun1Reward, Sun2Reward, Sun3Reward;
+	uint Suncounter = 1u;
+	bool Ignition1, Ignition2, Ignition3;
+	uint ignitioncounter;
+	uint passagecounter;
 
 	uint puntuation;
 	int puntuation_x;

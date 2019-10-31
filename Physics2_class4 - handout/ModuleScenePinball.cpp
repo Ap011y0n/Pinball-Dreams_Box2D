@@ -29,9 +29,11 @@ bool ModuleScenePinball::Start()
 	lightcounter = 1;
 	FiveH1 = FiveH2 = false;
 	Factive = Uactive = Eactive = Lactive = false;
-	Sun1 = Sun2 = Sun3 = false;
-
-
+	Sun1 = Sun2 = Sun3 = Sun1Reward = Sun2Reward = Sun3Reward = false;
+	Suncounter = 1u;
+	Ignition1 = Ignition2 = Ignition3 = false;
+	ignitioncounter = 0u;
+	passagecounter = 0u;
 
 	board = App->textures->Load("pinball/pinball_board_2.png");
 	flipper_Left = App->textures->Load("pinball/fliper_Left.png");
@@ -279,6 +281,7 @@ bool ModuleScenePinball::Start()
 	H_sensor = App->physics->CreateRectangleSensor( 767, 394, 5, 30, "H_sensor" , -10);
 	T_sensor = App->physics->CreateRectangleSensor( 778, 437, 5, 30, "T_sensor" , -10);
 	
+	Passage_Sensor = App->physics->CreateRectangleSensor(362, 191, 5, 30, "Passage_Sensor", -45);
 
 	//joints
 	FlipperLJoint = App->physics->CreateRevoluteJoint(FlipperL->body, rotAxisL->body, 20, 24, 0, 40);
@@ -388,8 +391,8 @@ void ModuleScenePinball::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			int x1 = 0, x2 = 0;
 			b2Vec2 vect(x1, x2);
 			ball->GetPosition(x1, x2);
-		
 			ball->body->ApplyLinearImpulse(b2Vec2(2, 2), vect, true);
+			currentpts += 500;
 		}
 		for (b2Fixture* f = bodyB->body->GetFixtureList(); f; f = f->GetNext()) {
 			if (f->IsSensor()) {
@@ -402,12 +405,15 @@ void ModuleScenePinball::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 }
 
 void ModuleScenePinball::MoveCamera() {
-	
 	int x, y;
 	ball->GetPosition(x, y);
 //	LOG("camera.y = %d", App->renderer->camera.y);
 	App->renderer->camera.y =-1*y +SCREEN_HEIGHT/2;
+	if (App->renderer->camera.y > 0) {
+		App->renderer->camera.y = 0;
+	}
 }
+
 void ModuleScenePinball::Input() {
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
@@ -429,15 +435,14 @@ void ModuleScenePinball::Input() {
 	
 	}
 	if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN) {
-		LOG("%d", currentpts.multipilier);
-	
+		LOG("%d", ignitioncounter);
 	}
 	
 	
 }
 
 //recives an index, then proceed to calculate the number of active letters, and then add a multiplier to score
-void ModuleScenePinball::Warp(int index) {
+void ModuleScenePinball::Warp(uint index) {
 	
 	switch (index) {
 	case 1:
@@ -469,7 +474,7 @@ void ModuleScenePinball::Warp(int index) {
 		}
 
 	case 3:
-		if (!Rlight) {
+		if (Rlight) {
 			Ractive = true;
 			Rlight = false;
 			break;
@@ -483,7 +488,7 @@ void ModuleScenePinball::Warp(int index) {
 		}
 
 	case 4:
-		if (!Plight) {
+		if (Plight) {
 			Pactive = true;
 			Plight = false;
 			break;
@@ -512,9 +517,12 @@ void ModuleScenePinball::Light(bool &active) {
 	if (L2active && Iactive && Gactive && Hactive && Tactive) {
 		if (lightcounter == 3) {
 			LOG("contador %d", lightcounter);
-			lightcounter++;
+			currentpts += 10000000;
+			lightcounter = 1;
+			L2active = Iactive = Gactive = Hactive = Tactive = false;
 		}
 		if (lightcounter == 2) {
+			currentpts += 5000000;
 			LOG("contador %d", lightcounter);
 			lightcounter++;
 		}
@@ -522,10 +530,6 @@ void ModuleScenePinball::Light(bool &active) {
 			LOG("contador %d", lightcounter);
 			lightcounter++;
 		}
-		
-		if (lightcounter == 4)lightcounter = 1;
-		L2active = Iactive = Gactive = Hactive = Tactive = false;
-		
 	}
 }
 void ModuleScenePinball::FiveHpts(bool &active) {
@@ -536,9 +540,43 @@ void ModuleScenePinball::FiveHpts(bool &active) {
 	}
 }
 void ModuleScenePinball::SunRun() {
-	if (Sun2)Sun3 = true;
-	if (Sun1)Sun2 = true;
-	Sun1 = true;
+	currentpts += 10000;
+	switch (Suncounter) {
+	case 1:
+		if (Sun1Reward) {
+			Sun3Reward = false;
+			Suncounter++;
+			currentpts += 10000;
+			break;
+		}
+		if (!Sun1Reward) {
+			Sun1Reward = true;
+			break;
+		}
+	case 2:
+		if (Sun2Reward) {
+			Sun1Reward = false; 
+			Suncounter++;
+			currentpts += 20000;
+			break;
+		}
+		if (!Sun2Reward) {
+			Sun2Reward = true;
+			break;
+		}
+	case 3:
+		if (Sun3Reward) {
+			Sun2Reward = false;
+			Suncounter = 1u;
+			currentpts += 30000;
+			break;
+		}
+		if (!Sun3Reward) {
+			Sun3Reward = true;
+			break;
+		}
+	}
+
 	
 }
 void ModuleScenePinball::Fuel(bool &active) {
@@ -550,19 +588,54 @@ void ModuleScenePinball::Fuel(bool &active) {
 	}
 }
 
+void ModuleScenePinball::Ignition(bool &active) {
+	active = true;
+	if (Ignition1 && Ignition2 && Ignition3) {
+		if (ignitioncounter < 8) { ignitioncounter++; }
+		else { ignitioncounter = 0; }
+		Ignition1 = Ignition2 = Ignition3 = false;
+	}
+}
+void ModuleScenePinball::Passage() {
+	if (passagecounter < 6) {
+		passagecounter++;
+	}
+	else { 
+		passagecounter = 1;
+	}
+	switch (passagecounter) {
+	case 1:
+		currentpts += 50000;
+		break;
+	case 2:
+		currentpts += 100000;
+		break;
+	case 3:
+		currentpts += 250000;
+		break;
+	case 4:
+		currentpts += 500000;
+		break;
+	case 5:
+		currentpts += 1000000;
+		break;
+	case 6:
+		currentpts += 2500000;
+		break;
+	}
+}
 //Receives the name of a sensor, then starts a determinate proces depending of it's name property
 void ModuleScenePinball::getSensor(char* name) {
 	if (name == "DeathSensor") {
-
 	}
 	if (name == "ignition1") {
-
+		Ignition(Ignition1);
 	}
 	if (name == "ignition2") {
-
+		Ignition(Ignition2);
 	}
 	if (name == "ignition3") {
-
+		Ignition(Ignition3);
 	}
 	if (name == "sun") {
 		SunRun();
@@ -612,7 +685,9 @@ void ModuleScenePinball::getSensor(char* name) {
 	if (name == "T_sensor") {
 		Light(Tactive);
 	}
-	
+	if (name == "Passage_Sensor") {
+		Passage();
+	}
 
 }
 
