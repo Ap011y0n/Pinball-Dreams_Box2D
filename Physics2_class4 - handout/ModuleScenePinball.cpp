@@ -300,7 +300,11 @@ bool ModuleScenePinball::Start()
 bool ModuleScenePinball::CleanUp()
 {
 	LOG("Unloading Intro scene");
-
+	App->textures->Unload(board);
+	App->textures->Unload(flipper_Left);
+	App->textures->Unload(flipper_Right);
+	App->textures->Unload(balltxt);
+	App->textures->Unload(bar_points);
 	return true;
 }
 
@@ -344,7 +348,6 @@ update_status ModuleScenePinball::Update()
 	App->renderer->Blit(bar_points,142, puntuation_bar_max, NULL, 1.0f, 0, 0, 0);
 
 	//Puntuation
-	currentpts.value = currentpts.value + 10000;
 	sprintf_s(text, 10, "%d",currentpts.value);
 	if (currentpts.value < 9) {
 		puntuation_x = 800;
