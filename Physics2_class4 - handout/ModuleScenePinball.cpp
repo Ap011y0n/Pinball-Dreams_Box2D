@@ -24,6 +24,10 @@ bool ModuleScenePinball::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
+	warp = Wlight = Alight = Rlight = Plight = Wactive = Aactive = Ractive = Pactive = false;
+	Lactive = Iactive = Gactive = Hactive = Tactive = false; 
+	lightcounter = 1;
+	
 	board = App->textures->Load("pinball/pinball_board_2.png");
 	flipper_Left = App->textures->Load("pinball/fliper_Left.png");
 	flipper_Right = App->textures->Load("pinball/fliper_Right.png");
@@ -399,18 +403,110 @@ void ModuleScenePinball::Input() {
 	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 	{
 		KickerJoint->EnableMotor(true);
-		LOG("Que cony");
+	
 	}
-	/*if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN) {
-		LOG("Current points %d",currentpts += 50);
+	if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN) {
+		LOG("%d", currentpts.multipilier);
+	
 	}
-	if (App->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN) {
-		LOG("Multiplier: %d", ++currentpts.multipilier)
-	}
-	*/
+	
+	
 }
 
-//Receives the name of a sensor, then starts a determinate proces depending of it
+//recives an index, then proceed to calculate the number of active letters, and then add a multiplier to score
+void ModuleScenePinball::Warp(int index) {
+	
+	switch (index) {
+	case 1:
+		if (Wlight) {
+			Wactive = true;
+			Wlight = false; 
+		break;
+		}
+		if (!Wlight) { 
+			Wlight = true;
+			Alight = false;
+			Rlight = false;
+			Plight = false;
+			break;
+		}
+		
+	case 2:
+		if (Alight) {
+			Aactive = true;
+			Alight = false;
+			break;
+		}
+		if (!Alight) {
+			Alight = true;
+			Wlight = false;
+			Rlight = false;
+			Plight = false;
+			break;
+		}
+
+	case 3:
+		if (!Rlight) {
+			Ractive = true;
+			Rlight = false;
+			break;
+		}
+		if (!Rlight) {
+			Rlight = true;
+			Wlight = false;
+			Alight = false;
+			Plight = false;
+			break;
+		}
+
+	case 4:
+		if (!Plight) {
+			Pactive = true;
+			Plight = false;
+			break;
+		}
+		if (!Plight) {
+			Plight = true;
+			Wlight = false;
+			Alight = false;
+			Rlight = false;
+			break;
+		}
+		
+		}
+	if (Wactive && Aactive && Ractive && Pactive) {
+		Wactive = Aactive = Ractive = Pactive = false;
+		if (currentpts.multipilier < 8) {
+			if (currentpts.multipilier >= 4)	currentpts.multipilier ++;
+				currentpts.multipilier ++;
+		}
+	}
+
+}
+//receives a light bool, and activates it
+void ModuleScenePinball::Light(bool &active) {
+	active = true;
+	if (Lactive && Iactive && Gactive && Hactive && Tactive) {
+		if (lightcounter == 3) {
+			LOG("contador %d", lightcounter);
+			lightcounter++;
+		}
+		if (lightcounter == 2) {
+			LOG("contador %d", lightcounter);
+			lightcounter++;
+		}
+		if (lightcounter == 1) {
+			LOG("contador %d", lightcounter);
+			lightcounter++;
+		}
+		
+		if (lightcounter == 4)lightcounter = 1;
+		Lactive = Iactive = Gactive = Hactive = Tactive = false;
+		
+	}
+}
+
+//Receives the name of a sensor, then starts a determinate proces depending of it's name property
 void ModuleScenePinball::getSensor(char* name) {
 	if (name == "DeathSensor") {
 
@@ -446,31 +542,33 @@ void ModuleScenePinball::getSensor(char* name) {
 
 	}
 	if (name == "W_sensor") {
-		currentpts.multipilier = 2;
+		Warp(1);
 	}
 	if (name == "A_sensor") {
-		currentpts.multipilier = 3;
+		Warp(2);
 	}
 	if (name == "R_sensor") {
-		currentpts.multipilier = 4;
+		Warp(3);
 	}
 	if (name == "P_sensor") {
-		currentpts.multipilier = 6;
+		Warp(4);
 	}
 	if (name == "L2_sensor") {
-
+		Light(Lactive);
 	}
 	if (name == "I_sensor") {
-
+		Light(Iactive);
 	}
 	if (name == "G_sensor") {
-
+		Light(Gactive);
 	}
 	if (name == "H_sensor") {
-
+		Light(Hactive);
 	}
 	if (name == "T_sensor") {
-
+		Light(Tactive);
 	}
+	
 
 }
+

@@ -39,9 +39,10 @@ public:
 	void MoveCamera();
 	void Input();
 	void getSensor(char* name);
+	void Warp(int iterator = 0);
+	void Light(bool &active);
 
 private:
-public:
 	punctuation currentpts;
 
 	PhysBody* ball;
@@ -61,7 +62,7 @@ public:
 	PhysBody* kickerBase;
 	PhysBody* kicker;
 	PhysBody* SSLPiston;
-	PhysBody* SSRPiston; 
+	PhysBody* SSRPiston;
 	PhysBody* SSLPistonBase;
 	PhysBody* SSRPistonBase;
 	b2RevoluteJoint* FlipperLJoint;
@@ -96,25 +97,12 @@ public:
 	PhysBody* H_sensor;
 	PhysBody* T_sensor;
 
-//	p2List<PhysBody*> circles;
-//	p2List<PhysBody*> boxes;
-//	p2List<PhysBody*> ricks;
-/*
-	PhysBody* sensor;
-	bool sensed;
-*/
-
 	SDL_Texture* board;
 	SDL_Texture* flipper_Left;
 	SDL_Texture* flipper_Right;
 	SDL_Texture* balltxt;
-/*	SDL_Texture* box;
-	SDL_Texture* rick;
-	uint bonus_fx;
-	p2Point<int> ray;
-	bool ray_on;*/
 
-	// Constants for blit flipper Right
+		// Constants for blit flipper Right
 	float Flipper_R_rotation = 0;
 	int Flipper_R_positon_x = 0;
 	int Flipper_R_positon_y = 0;
@@ -130,6 +118,12 @@ public:
 	//Puntuation variables
 	int font_puntuation = -1;
 	char text[10];
-	uint puntuation=1;
+	uint puntuation = 1;
+	//Sensor bools
+	bool warp, Wlight, Alight, Rlight, Plight, Wactive, Aactive, Ractive, Pactive;
+	bool Lactive, Iactive, Gactive, Hactive, Tactive;
+	uint lightcounter = 1u;
+public:
+	
 };
 
