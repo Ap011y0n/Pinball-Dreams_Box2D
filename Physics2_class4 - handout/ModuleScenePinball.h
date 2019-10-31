@@ -130,6 +130,7 @@ public:
 	//Puntuation variables
 	int font_puntuation = -1;
 	char text[10];
-	uint puntuation=1;
+	uint puntuation;
+	int puntuation_x;
 };
 
