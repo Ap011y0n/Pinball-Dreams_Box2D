@@ -118,12 +118,15 @@ private:
 	//Puntuation variables
 	int font_puntuation = -1;
 	char text[10];
-	uint puntuation = 1;
+
 	//Sensor bools
 	bool warp, Wlight, Alight, Rlight, Plight, Wactive, Aactive, Ractive, Pactive;
 	bool Lactive, Iactive, Gactive, Hactive, Tactive;
 	uint lightcounter = 1u;
-public:
+
 	
+
+	uint puntuation;
+	int puntuation_x;
 };
 
