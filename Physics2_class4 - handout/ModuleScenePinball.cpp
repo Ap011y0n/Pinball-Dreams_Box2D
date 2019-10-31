@@ -338,7 +338,7 @@ update_status ModuleScenePinball::Update()
 	App->renderer->Blit(balltxt, x, y, NULL, 1.0f, Ball_rotation, 15, 15);
 	
 	//Puntuation
-	
+	currentpts.value = currentpts.value + 10000;
 	sprintf_s(text, 10, "%d",currentpts.value);
 	if (currentpts.value < 9) {
 		puntuation_x = 800;
@@ -358,6 +358,17 @@ update_status ModuleScenePinball::Update()
 	if (currentpts.value >= 100000) {
 		puntuation_x = 640;
 	}
+	if (currentpts.value >= 1000000) {
+		puntuation_x = 608;
+	}
+	if (currentpts.value >= 10000000) {
+		puntuation_x = 576;
+	}
+	if (currentpts.value >= 100000000) {
+		puntuation_x = 544;
+		currentpts.value = 100000000;
+	}
+	
 	App->fonts->BlitText(puntuation_x,App->renderer->camera.y+4, font_puntuation,text);
 	return UPDATE_CONTINUE;
 }
