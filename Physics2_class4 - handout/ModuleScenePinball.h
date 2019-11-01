@@ -174,16 +174,26 @@ private:
 	SDL_Rect H_lights;
 	SDL_Rect T_lights;
 
-
-	SDL_Texture* multipler;
-	SDL_Rect multipler_x2;
-	SDL_Rect multipler_x3;
-	SDL_Rect multipler_x4;;
-	SDL_Rect multipler_x6;
-	SDL_Rect multipler_x8;
+	SDL_Texture* warp_button;
+	SDL_Rect W_warp;
+	SDL_Rect A_warp;
+	SDL_Rect R_warp;
+	SDL_Rect P_warp;
 
 	SDL_Texture* ignition_button;
 	SDL_Rect Ignition_button;
-	
+
+	SDL_Texture* sun_button;
+	SDL_Rect Ssun_button;
+	SDL_Rect Usun_button;
+	SDL_Rect Nsun_button;
+
+	SDL_Texture* multiplier_button;
+	SDL_Rect multiplier_x2;
+	SDL_Rect multiplier_x3;
+	SDL_Rect multiplier_x4;
+	SDL_Rect multiplier_x6;
+	SDL_Rect multiplier_x8;
+
 };
 

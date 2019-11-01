@@ -62,6 +62,71 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 	Ignition_button.y = 0;
 	Ignition_button.w = 31;
 	Ignition_button.h = 31;
+
+	Ssun_button.x = 0;
+	Ssun_button.y = 0;
+	Ssun_button.w = 31;
+	Ssun_button.h = 31;
+
+	Usun_button.x = 32;
+	Usun_button.y = 0;
+	Usun_button.w = 31;
+	Usun_button.h = 31;
+
+	Nsun_button.x = 64;
+	Nsun_button.y = 0;
+	Nsun_button.w = 31;
+	Nsun_button.h = 31;
+
+	W_warp.x = 0;
+	W_warp.y = 0;
+	W_warp.w = 36;
+	W_warp.h = 36;
+
+	A_warp.x = 37;
+	A_warp.y = 0;
+	A_warp.w = 36;
+	A_warp.h = 36;
+
+	R_warp.x = 74;
+	R_warp.y = 0;
+	R_warp.w = 36;
+	R_warp.h = 36;
+
+	P_warp.x = 111;
+	P_warp.y = 0;
+	P_warp.w = 36;
+	P_warp.h = 36;
+
+	W_warp.x = 0;
+	W_warp.y = 0;
+	W_warp.w = 36;
+	W_warp.h = 36;
+
+	multiplier_x2.x = 0;
+	multiplier_x2.y = 0;
+	multiplier_x2.w = 58;
+	multiplier_x2.h = 29;
+
+	multiplier_x3.x = 59;
+	multiplier_x3.y = 0;
+	multiplier_x3.w = 58;
+	multiplier_x3.h = 29;
+
+	multiplier_x4.x = 118;
+	multiplier_x4.y = 0;
+	multiplier_x4.w = 58;
+	multiplier_x4.h = 29;
+
+	multiplier_x6.x = 177;
+	multiplier_x6.y = 0;
+	multiplier_x6.w = 58;
+	multiplier_x6.h = 29;
+
+	multiplier_x8.x = 236;
+	multiplier_x8.y = 0;
+	multiplier_x8.w = 58;
+	multiplier_x8.h = 29;
 	
 }
 
@@ -96,6 +161,9 @@ bool ModuleScenePinball::Start()
 	fuel= App->textures->Load("pinball/Fuel_letters.png");
 	lights = App->textures->Load("pinball/Light_letters.png");
 	ignition_button= App->textures->Load("pinball/red_button.png");
+	sun_button = App->textures->Load("pinball/sun_letters.png");
+	warp_button = App->textures->Load("pinball/Warp_letters.png");
+	multiplier_button = App->textures->Load("pinball/multiplier_letters.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -364,6 +432,11 @@ bool ModuleScenePinball::CleanUp()
 	App->textures->Unload(balltxt);
 	App->textures->Unload(bar_points); 
 	App->textures->Unload(fuel);
+	App->textures->Unload(lights);
+	App->textures->Unload(ignition_button);
+	App->textures->Unload(sun_button);
+	App->textures->Unload(warp_button);
+	App->textures->Unload(multiplier_button);
 	return true;
 }
 
@@ -776,7 +849,7 @@ void ModuleScenePinball::getSensor(char* name) {
 	if (name == "P_sensor") {
 		Warp(4);
 	}
-	if (name == "L2_sensor") {//
+	if (name == "L2_sensor") {
 		Light(L2active);
 	}
 	if (name == "I_sensor") {
@@ -837,7 +910,45 @@ void ModuleScenePinball::blitbuttons()
 	if (Ignition3 == true) {
 		App->renderer->Blit(ignition_button, 523, 579, &Ignition_button);
 	}
+
+	if (Sun1Reward == true) {
+		App->renderer->Blit(sun_button, 627, 502, &Ssun_button);
+	}
+	if (Sun2Reward == true) {
+		App->renderer->Blit(sun_button, 652, 527, &Usun_button);
+	}
+	if (Sun3Reward == true) {
+		App->renderer->Blit(sun_button, 678, 554, &Nsun_button);
+	}
 	
+	if (Wactive == true || Wlight == true) {
+		App->renderer->Blit(warp_button, 441, 164, &W_warp);
+	}
+	if (Aactive == true || Alight == true) {
+		App->renderer->Blit(warp_button, 509, 184, &A_warp);
+	}
+	if (Ractive == true || Rlight == true) {
+		App->renderer->Blit(warp_button, 578, 183, &R_warp);
+	}
+	if (Pactive == true || Plight == true) {
+		App->renderer->Blit(warp_button, 648, 164, &P_warp);
+	}
+
+	if (currentpts.multipilier == 2) {
+		App->renderer->Blit(multiplier_button, 414, 111, &multiplier_x2);
+	}
+	if (currentpts.multipilier == 3) {
+		App->renderer->Blit(multiplier_button, 465, 86, &multiplier_x3);
+	}
+	if (currentpts.multipilier == 4) {
+		App->renderer->Blit(multiplier_button, 529, 73, &multiplier_x4);
+	}
+	if (currentpts.multipilier == 6) {
+		App->renderer->Blit(multiplier_button, 594, 86, &multiplier_x6);
+	}
+	if (currentpts.multipilier == 8) {
+		App->renderer->Blit(multiplier_button, 645, 111, &multiplier_x8);
+	}
 
 }
 
