@@ -57,6 +57,11 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 	T_lights.y = 0;
 	T_lights.w = 32;
 	T_lights.h = 32;
+
+	Ignition_button.x = 0;
+	Ignition_button.y = 0;
+	Ignition_button.w = 31;
+	Ignition_button.h = 31;
 	
 }
 
@@ -88,6 +93,7 @@ bool ModuleScenePinball::Start()
 	bar_points= App->textures->Load("pinball/bar_points.png");
 	fuel= App->textures->Load("pinball/Fuel_letters.png");
 	lights = App->textures->Load("pinball/Light_letters.png");
+	ignition_button= App->textures->Load("pinball/red_button.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -716,18 +722,14 @@ void ModuleScenePinball::getSensor(char* name) {
 	}
 	if (name == "F_sensor") {
 		Fuel(Factive);
-		f_fuel = true;
 	}
 	if (name == "U_sensor") {
-		u_fuel = true;
 		Fuel(Uactive);
 	}
 	if (name == "E_sensor") {
-		e_fuel = true;
 		Fuel(Eactive);
 	}
 	if (name == "L_sensor") {
-		l_fuel = true;
 		Fuel(Lactive);
 	}
 	if (name == "sensor500") {
@@ -748,25 +750,20 @@ void ModuleScenePinball::getSensor(char* name) {
 	if (name == "P_sensor") {
 		Warp(4);
 	}
-	if (name == "L2_sensor") {
+	if (name == "L2_sensor") {//
 		Light(L2active);
-		l_lights = true;
 	}
 	if (name == "I_sensor") {
 		Light(Iactive);
-		i_lights = true;
 	}
 	if (name == "G_sensor") {
 		Light(Gactive);
-		g_lights = true;
 	}
 	if (name == "H_sensor") {
 		Light(Hactive);
-		h_lights = true;
 	}
 	if (name == "T_sensor") {
 		Light(Tactive);
-		t_lights = true;
 	}
 	if (name == "Passage_Sensor") {
 		Passage();
@@ -776,33 +773,43 @@ void ModuleScenePinball::getSensor(char* name) {
 
 void ModuleScenePinball::blitbuttons()
 {
-	if (f_fuel == true) {
+	if (Factive == true) {
 		App->renderer->Blit(fuel, 199, 556, &F_fuel);
 	}
-	if (u_fuel == true) {
+	if (Uactive == true) {
 		App->renderer->Blit(fuel, 198, 603, &U_fuel);
 	}
-	if (e_fuel == true) {
+	if (Eactive == true) {
 		App->renderer->Blit(fuel, 197, 650, &E_fuel);
 	}
-	if (l_fuel == true) {
+	if (Lactive == true) {
 		App->renderer->Blit(fuel, 196, 697, &L_fuel);
 	}
 
-	if (l_lights == true) {
+	if (L2active==true) {
 		App->renderer->Blit(lights, 706, 247, &L_lights);
 	}
-	if (i_lights == true) {
+	if (Iactive == true) {
 		App->renderer->Blit(lights, 717, 290, &I_lights);
 	}
-	if (g_lights == true) {
+	if (Gactive == true) {
 		App->renderer->Blit(lights, 726, 333, &G_lights);
 	}
-	if (h_lights == true) {
+	if (Hactive == true) {
 		App->renderer->Blit(lights, 737, 375, &H_lights);
 	}
-	if (t_lights == true) {
+	if (Tactive == true) {
 		App->renderer->Blit(lights, 747, 419, &T_lights);
+	}
+
+	if (Ignition1 == true) {
+		App->renderer->Blit(ignition_button, 446, 539, &Ignition_button);
+	}
+	if (Ignition2 == true) {
+		App->renderer->Blit(ignition_button, 485, 560, &Ignition_button);
+	}
+	if (Ignition3 == true) {
+		App->renderer->Blit(ignition_button, 523, 579, &Ignition_button);
 	}
 	
 
