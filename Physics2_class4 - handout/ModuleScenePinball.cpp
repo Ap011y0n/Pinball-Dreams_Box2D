@@ -1065,6 +1065,19 @@ void ModuleScenePinball::blitbuttons()
 	if (passagecounter == 4) {
 		App->renderer->Blit(numbers_buttons, 220, 303, &number_500);
 	}
+	if (passagecounter == 5) {
+		App->renderer->Blit(numbers_buttons, 250, 268, &number_750);
+
+	}
+	if (passagecounter == 6) {
+		App->renderer->Blit(numbers_buttons, 281, 236, &number_1000);
+
+	}
+	if (passagecounter == 7) {
+		App->renderer->Blit(numbers_buttons, 314, 204, &number_2500);
+
+	}
+
 
 }
 
