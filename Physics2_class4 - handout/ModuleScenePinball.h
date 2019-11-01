@@ -46,6 +46,7 @@ public:
 	void Ignition(bool &active);
 	void SunRun();
 	void Passage();
+	void blitbuttons();
 
 private:
 	punctuation currentpts;
@@ -144,5 +145,17 @@ private:
 
 	uint puntuation;
 	int puntuation_x;
+
+	//Animations
+	SDL_Texture* fuel;
+	SDL_Rect F_fuel;
+	bool f_fuel;
+	SDL_Rect U_fuel;
+	bool u_fuel;
+	SDL_Rect E_fuel;
+	bool e_fuel;
+	SDL_Rect L_fuel;
+	bool l_fuel;
+	
 };
 

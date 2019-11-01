@@ -13,7 +13,25 @@
 
 ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
+	F_fuel.x = 0;
+	F_fuel.y = 0;
+	F_fuel.w = 36;
+	F_fuel.h = 36;
 
+	U_fuel.x = 36;
+	U_fuel.y = 0;
+	U_fuel.w = 36;
+	U_fuel.h = 36;
+
+	E_fuel.x = 72;
+	E_fuel.y = 0;
+	E_fuel.w = 36;
+	E_fuel.h = 36;
+
+	L_fuel.x = 108;
+	L_fuel.y = 0;
+	L_fuel.w = 36;
+	L_fuel.h = 36;
 }
 
 ModuleScenePinball::~ModuleScenePinball()
@@ -40,6 +58,7 @@ bool ModuleScenePinball::Start()
 	flipper_Right = App->textures->Load("pinball/fliper_Right.png");
 	balltxt = App->textures->Load("pinball/ball.png");
 	bar_points= App->textures->Load("pinball/bar_points.png");
+	fuel= App->textures->Load("pinball/Fuel_letters.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -304,7 +323,8 @@ bool ModuleScenePinball::CleanUp()
 	App->textures->Unload(flipper_Left);
 	App->textures->Unload(flipper_Right);
 	App->textures->Unload(balltxt);
-	App->textures->Unload(bar_points);
+	App->textures->Unload(bar_points); 
+	App->textures->Unload(fuel);
 	return true;
 }
 
@@ -344,9 +364,10 @@ update_status ModuleScenePinball::Update()
 
 	App->renderer->Blit(flipper_Left, (Flipper_L_positon_x+5),(Flipper_L_positon_y+10), NULL, 1.0f, Flipper_L_rotation, -5, -5);
 	App->renderer->Blit(flipper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y +5), NULL, 1.0f, Flipper_R_rotation, -1,0);
+	blitbuttons(); //This function will make all the blits for the animations
 	App->renderer->Blit(balltxt, x, y, NULL, 1.0f, Ball_rotation, 15, 15);
 	App->renderer->Blit(bar_points,142, puntuation_bar_max, NULL, 1.0f, 0, 0, 0);
-
+	
 	//Puntuation
 	sprintf_s(text, 10, "%d",currentpts.value);
 	if (currentpts.value < 9) {
@@ -659,14 +680,18 @@ void ModuleScenePinball::getSensor(char* name) {
 	}
 	if (name == "F_sensor") {
 		Fuel(Factive);
+		f_fuel = true;
 	}
 	if (name == "U_sensor") {
+		u_fuel = true;
 		Fuel(Uactive);
 	}
 	if (name == "E_sensor") {
+		e_fuel = true;
 		Fuel(Eactive);
 	}
 	if (name == "L_sensor") {
+		l_fuel = true;
 		Fuel(Lactive);
 	}
 	if (name == "sensor500") {
@@ -706,5 +731,21 @@ void ModuleScenePinball::getSensor(char* name) {
 		Passage();
 	}
 
+}
+
+void ModuleScenePinball::blitbuttons()
+{
+	if (f_fuel == true) {
+		App->renderer->Blit(fuel, 199, 556, &F_fuel);
+	}
+	if (u_fuel == true) {
+		App->renderer->Blit(fuel, 198, 603, &U_fuel);
+	}
+	if (e_fuel == true) {
+		App->renderer->Blit(fuel, 197, 650, &E_fuel);
+	}
+	if (l_fuel == true) {
+		App->renderer->Blit(fuel, 196, 697, &L_fuel);
+	}
 }
 
