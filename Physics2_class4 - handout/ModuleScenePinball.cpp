@@ -523,8 +523,8 @@ update_status ModuleScenePinball::Update()
 		spacing = 100000000;
 	}
 	
-	App->fonts->BlitText(puntuation_x,2, font_puntuation,text);
-	App->fonts->BlitText(320, 2, font_puntuation, lives);
+	App->fonts->BlitText(puntuation_x-1,4, font_puntuation,text);
+	App->fonts->BlitText(319, 4, font_puntuation, lives);
 	return UPDATE_CONTINUE;
 }
 
