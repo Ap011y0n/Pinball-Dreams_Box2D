@@ -26,8 +26,11 @@ public:
 	bool Contains(int x, int y) const;
 	int RayCast(int x1, int y1, int x2, int y2, float& normal_x, float& normal_y) const;
 
+
 public:
 	int width, height;
+	bool transform = false;
+	int xtransform = 0, ytransform = 0;
 	b2Body* body;
 	
 	Module* listener;
