@@ -167,6 +167,11 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 	blue_button.y = 0;
 	blue_button.w = 32;
 	blue_button.h = 32;
+
+	red_square.x = 0;
+	red_square.y = 0;
+	red_square.w = 46;
+	red_square.h = 46;
 	
 }
 
@@ -202,6 +207,7 @@ bool ModuleScenePinball::Start()
 	multiplier_button = App->textures->Load("pinball/multiplier_letters.png");
 	numbers_buttons = App->textures->Load("pinball/numbers_buttons.png");
 	Blue_button = App->textures->Load("pinball/blue_button.png");
+	Red_square = App->textures->Load("pinball/red_bar.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -1105,6 +1111,13 @@ void ModuleScenePinball::blitbuttons()
 	}
 	if (sensor_Blue2 == true) {
 		App->renderer->Blit(Blue_button, 230, 879, &blue_button);
+	}
+
+	if (FiveH1 == true) {
+		App->renderer->Blit(Red_square, 296, 286, &red_square);
+	}
+	if (FiveH2 == true) {
+		App->renderer->Blit(Red_square, 338, 245, &red_square);
 	}
 
 

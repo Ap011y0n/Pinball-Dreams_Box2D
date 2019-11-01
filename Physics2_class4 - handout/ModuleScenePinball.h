@@ -225,5 +225,8 @@ private:
 	SDL_Texture* Blue_button;
 	SDL_Rect blue_button;
 
+	SDL_Texture* Red_square;
+	SDL_Rect red_square;
+
 };
 
