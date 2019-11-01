@@ -62,7 +62,21 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 	Ignition_button.y = 0;
 	Ignition_button.w = 31;
 	Ignition_button.h = 31;
-	
+
+	Ssun_button.x = 0;
+	Ssun_button.y = 0;
+	Ssun_button.w = 31;
+	Ssun_button.h = 31;
+
+	Usun_button.x = 32;
+	Usun_button.y = 0;
+	Usun_button.w = 31;
+	Usun_button.h = 31;
+
+	Nsun_button.x = 64;
+	Nsun_button.y = 0;
+	Nsun_button.w = 31;
+	Nsun_button.h = 31;
 }
 
 ModuleScenePinball::~ModuleScenePinball()
@@ -94,6 +108,7 @@ bool ModuleScenePinball::Start()
 	fuel= App->textures->Load("pinball/Fuel_letters.png");
 	lights = App->textures->Load("pinball/Light_letters.png");
 	ignition_button= App->textures->Load("pinball/red_button.png");
+	sun_button = App->textures->Load("pinball/sun_letters.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -362,6 +377,9 @@ bool ModuleScenePinball::CleanUp()
 	App->textures->Unload(balltxt);
 	App->textures->Unload(bar_points); 
 	App->textures->Unload(fuel);
+	App->textures->Unload(lights);
+	App->textures->Unload(ignition_button);
+	App->textures->Unload(sun_button);
 	return true;
 }
 
@@ -810,6 +828,16 @@ void ModuleScenePinball::blitbuttons()
 	}
 	if (Ignition3 == true) {
 		App->renderer->Blit(ignition_button, 523, 579, &Ignition_button);
+	}
+
+	if (Sun1Reward == true) {
+		App->renderer->Blit(sun_button, 627, 502, &Ssun_button);
+	}
+	if (Sun2Reward == true) {
+		App->renderer->Blit(sun_button, 652, 527, &Usun_button);
+	}
+	if (Sun3Reward == true) {
+		App->renderer->Blit(sun_button, 678, 554, &Nsun_button);
 	}
 	
 

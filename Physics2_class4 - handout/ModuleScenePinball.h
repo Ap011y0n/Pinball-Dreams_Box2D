@@ -175,6 +175,10 @@ private:
 
 	SDL_Texture* ignition_button;
 	SDL_Rect Ignition_button;
-	
+
+	SDL_Texture* sun_button;
+	SDL_Rect Ssun_button;
+	SDL_Rect Usun_button;
+	SDL_Rect Nsun_button;
 };
 
