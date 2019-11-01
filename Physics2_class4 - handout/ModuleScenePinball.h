@@ -156,6 +156,19 @@ private:
 	bool e_fuel;
 	SDL_Rect L_fuel;
 	bool l_fuel;
+
+	SDL_Texture* lights;
+	SDL_Rect L_lights;
+	bool l_lights;
+	SDL_Rect I_lights;
+	bool i_lights;
+	SDL_Rect G_lights;
+	bool g_lights;
+	SDL_Rect H_lights;
+	bool h_lights;
+	SDL_Rect T_lights;
+	bool t_lights;
+
 	
 };
 

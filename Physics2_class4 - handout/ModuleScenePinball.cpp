@@ -32,6 +32,32 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 	L_fuel.y = 0;
 	L_fuel.w = 36;
 	L_fuel.h = 36;
+	
+	L_lights.x = 0;
+	L_lights.y = 0;
+	L_lights.w = 32;
+	L_lights.h = 32;
+	
+	I_lights.x = 32;
+	I_lights.y = 0;
+	I_lights.w = 32;
+	I_lights.h = 32;
+	
+	G_lights.x = 64;
+	G_lights.y = 0;
+	G_lights.w = 32;
+	G_lights.h = 32;
+	
+	H_lights.x = 98;
+	H_lights.y = 0;
+	H_lights.w = 32;
+	H_lights.h = 32;
+	
+	T_lights.x = 130;
+	T_lights.y = 0;
+	T_lights.w = 32;
+	T_lights.h = 32;
+	
 }
 
 ModuleScenePinball::~ModuleScenePinball()
@@ -59,6 +85,7 @@ bool ModuleScenePinball::Start()
 	balltxt = App->textures->Load("pinball/ball.png");
 	bar_points= App->textures->Load("pinball/bar_points.png");
 	fuel= App->textures->Load("pinball/Fuel_letters.png");
+	lights = App->textures->Load("pinball/Light_letters.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -714,18 +741,23 @@ void ModuleScenePinball::getSensor(char* name) {
 	}
 	if (name == "L2_sensor") {
 		Light(L2active);
+		l_lights = true;
 	}
 	if (name == "I_sensor") {
 		Light(Iactive);
+		i_lights = true;
 	}
 	if (name == "G_sensor") {
 		Light(Gactive);
+		g_lights = true;
 	}
 	if (name == "H_sensor") {
 		Light(Hactive);
+		h_lights = true;
 	}
 	if (name == "T_sensor") {
 		Light(Tactive);
+		t_lights = true;
 	}
 	if (name == "Passage_Sensor") {
 		Passage();
@@ -747,5 +779,23 @@ void ModuleScenePinball::blitbuttons()
 	if (l_fuel == true) {
 		App->renderer->Blit(fuel, 196, 697, &L_fuel);
 	}
+
+	if (l_lights == true) {
+		App->renderer->Blit(lights, 706, 247, &L_lights);
+	}
+	if (i_lights == true) {
+		App->renderer->Blit(lights, 717, 290, &I_lights);
+	}
+	if (g_lights == true) {
+		App->renderer->Blit(lights, 726, 333, &G_lights);
+	}
+	if (h_lights == true) {
+		App->renderer->Blit(lights, 737, 375, &H_lights);
+	}
+	if (t_lights == true) {
+		App->renderer->Blit(lights, 747, 419, &T_lights);
+	}
+	
+
 }
 
