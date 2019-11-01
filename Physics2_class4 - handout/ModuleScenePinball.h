@@ -154,13 +154,27 @@ private:
 	//Animations
 	SDL_Texture* fuel;
 	SDL_Rect F_fuel;
-	bool f_fuel;
 	SDL_Rect U_fuel;
-	bool u_fuel;
 	SDL_Rect E_fuel;
-	bool e_fuel;
 	SDL_Rect L_fuel;
-	bool l_fuel;
+
+	SDL_Texture* lights;
+	SDL_Rect L_lights;
+	SDL_Rect I_lights;
+	SDL_Rect G_lights;
+	SDL_Rect H_lights;
+	SDL_Rect T_lights;
+
+
+	SDL_Texture* multipler;
+	SDL_Rect multipler_x2;
+	SDL_Rect multipler_x3;
+	SDL_Rect multipler_x4;;
+	SDL_Rect multipler_x6;
+	SDL_Rect multipler_x8;
+
+	SDL_Texture* ignition_button;
+	SDL_Rect Ignition_button;
 	
 };
 
