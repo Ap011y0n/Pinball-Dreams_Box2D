@@ -149,7 +149,7 @@ private:
 	uint puntuation;
 	int puntuation_x;
 	bool end;
-	
+	float KickerjointMotor;
 
 	//Animations
 	SDL_Texture* fuel;

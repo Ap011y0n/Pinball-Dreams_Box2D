@@ -99,6 +99,7 @@ bool ModuleScenePinball::Start()
 	passagecounter = 0u;
 	balls = 3;
 	end = false;
+	KickerjointMotor = 0;
 
 	board = App->textures->Load("pinball/pinball_board_2.png");
 	flipper_Left = App->textures->Load("pinball/fliper_Left.png");
@@ -526,10 +527,20 @@ void ModuleScenePinball::Input() {
 		FlipperR->GetPosition(Flipper_R_positon_x, Flipper_R_positon_y);
 		Flipper_R_rotation = FlipperR->GetRotation();
 	}
-	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+	{
+	
+		if(KickerjointMotor<2000)KickerjointMotor+=20;
+		KickerJoint->EnableMotor(false);
+	
+	
+	}
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP)
 	{
 		KickerJoint->EnableMotor(true);
-	
+		KickerJoint->SetMotorSpeed(PIXEL_TO_METERS(KickerjointMotor));
+		KickerjointMotor = 0;
+
 	}
 	if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN) {
 		LOG("%d", ignitioncounter);
@@ -538,7 +549,8 @@ void ModuleScenePinball::Input() {
 	
 }
 
-//recives an index, then proceed to calculate the number of active letters, and then add a multiplier to score
+//recives an index and lights that letter, if that letter was already lightened, activates it,
+//then proceed to calculate the number of active letters, and then add a multiplier to score
 void ModuleScenePinball::Warp(uint index) {
 	
 	switch (index) {

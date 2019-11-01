@@ -261,6 +261,15 @@ b2PrismaticJoint* ModulePhysics::CreatePrismaticJoint(b2Body* bodyA, b2Body* bod
 
 update_status ModulePhysics::PostUpdate()
 {
+	for (b2Body* b = world->GetBodyList(); b; b = b->GetNext())
+	{
+		PhysBody* phys = (PhysBody*)b->GetUserData();
+		if (phys && phys->transform) {
+			phys->transform = false;
+			b2Vec2 pos(PIXEL_TO_METERS(phys->xtransform), PIXEL_TO_METERS(phys->ytransform));
+			b->SetTransform(pos, 0);
+		}
+	}
 	selected = false;
 	if(App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 		debug = !debug;
@@ -276,11 +285,6 @@ update_status ModulePhysics::PostUpdate()
 	for(b2Body* b = world->GetBodyList(); b; b = b->GetNext())
 	{
 		PhysBody* phys = (PhysBody*)b->GetUserData();
-		if (phys && phys->transform) {
-			phys->transform = false;
-			b2Vec2 pos(PIXEL_TO_METERS(phys->xtransform), PIXEL_TO_METERS(phys->ytransform));
-				b->SetTransform(pos, 0);
-		}
 
 		for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
 		{
