@@ -136,9 +136,6 @@ private:
 	int Flipper_L_positon_x = 0;
 	int Flipper_L_positon_y = 0;
 
-	//Constants for blit ball
-	float Ball_rotation = 0;
-
 	//Constant for blit puntuation_bar
 	
 	//Puntuation variables

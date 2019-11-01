@@ -448,7 +448,7 @@ bool ModuleScenePinball::CleanUp()
 // Update: draw background
 update_status ModuleScenePinball::Update()
 {
-	Ball_rotation = ball->GetRotation();
+	
 
 	Flipper_L_rotation = FlipperL->GetRotation();
 	FlipperL->GetPosition(Flipper_L_positon_x, Flipper_L_positon_y);
@@ -482,7 +482,7 @@ update_status ModuleScenePinball::Update()
 	App->renderer->Blit(flipper_Left, (Flipper_L_positon_x+5),(Flipper_L_positon_y+10), NULL, 1.0f, Flipper_L_rotation, -5, -5);
 	App->renderer->Blit(flipper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y +5), NULL, 1.0f, Flipper_R_rotation, -1,0);
 	blitbuttons(); //This function will make all the blits for the animations
-	App->renderer->Blit(balltex, x, y, NULL, 1.0f, Ball_rotation, 15, 15);
+	App->renderer->Blit(balltex, x, y, NULL, 1.0f, 0, 15, 15);
 	App->renderer->Blit(bar_points,142, -App->renderer->camera.y+1, NULL, 1.0f, 0, 0, 0);
 	
 	//Puntuation
