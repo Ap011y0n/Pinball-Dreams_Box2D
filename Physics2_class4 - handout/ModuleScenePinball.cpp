@@ -151,12 +151,17 @@ bool ModuleScenePinball::Start()
 	balls = 3;
 	end = false;
 	KickerjointMotor = 0;
-	state = PLAY;
+	state = START;
+	movecam = true;
+	App->renderer->camera.y = 0;
+	CurrScore = true;
+	PrevScore = MaxScore = false;
+
 
 	board = App->textures->Load("pinball/pinball_board_2.png");
 	flipper_Left = App->textures->Load("pinball/fliper_Left.png");
 	flipper_Right = App->textures->Load("pinball/fliper_Right.png");
-	balltxt = App->textures->Load("pinball/ball.png");
+	balltex = App->textures->Load("pinball/ball.png");
 	bar_points= App->textures->Load("pinball/bar_points.png");
 	fuel= App->textures->Load("pinball/Fuel_letters.png");
 	lights = App->textures->Load("pinball/Light_letters.png");
@@ -429,7 +434,7 @@ bool ModuleScenePinball::CleanUp()
 	App->textures->Unload(board);
 	App->textures->Unload(flipper_Left);
 	App->textures->Unload(flipper_Right);
-	App->textures->Unload(balltxt);
+	App->textures->Unload(balltex);
 	App->textures->Unload(bar_points); 
 	App->textures->Unload(fuel);
 	App->textures->Unload(lights);
@@ -463,7 +468,7 @@ update_status ModuleScenePinball::Update()
 	if (SSLJoint->IsMotorEnabled())SSLJoint->EnableMotor(false);
 
 	Input();
-	Restart();
+
 
 	p2SString title("Pinball_Dreams Box2D  mouse.x:%d mouse.y %d",
 	App->input->GetMouseX(), App->input->GetMouseY());
@@ -477,40 +482,45 @@ update_status ModuleScenePinball::Update()
 	App->renderer->Blit(flipper_Left, (Flipper_L_positon_x+5),(Flipper_L_positon_y+10), NULL, 1.0f, Flipper_L_rotation, -5, -5);
 	App->renderer->Blit(flipper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y +5), NULL, 1.0f, Flipper_R_rotation, -1,0);
 	blitbuttons(); //This function will make all the blits for the animations
-	App->renderer->Blit(balltxt, x, y, NULL, 1.0f, Ball_rotation, 15, 15);
-	App->renderer->Blit(bar_points,142, -App->renderer->camera.y, NULL, 1.0f, 0, 0, 0);
+	App->renderer->Blit(balltex, x, y, NULL, 1.0f, Ball_rotation, 15, 15);
+	App->renderer->Blit(bar_points,142, -App->renderer->camera.y+1, NULL, 1.0f, 0, 0, 0);
 	
 	//Puntuation
-	sprintf_s(text, 10, "%d",currentpts.value);
-	sprintf_s(lives, 10, "%d", balls);
+	int spacing;
+	if (CurrScore) spacing = currentpts.value;
+	if (PrevScore) spacing = previouspts.value;
+	if (MaxScore) spacing = highestpts.value;
 
-	if (currentpts.value < 9) {
+	sprintf_s(text, 10, "%d", spacing);
+	sprintf_s(lives, 10, "%d", balls);
+	
+	if (spacing < 9) {
 		puntuation_x = 800;
 	}
-	if (currentpts.value >= 10) {
+	if (spacing >= 10) {
 		puntuation_x = 768;
 	}
-	if (currentpts.value >= 100) {
+	if (spacing >= 100) {
 		puntuation_x = 736;
 	}
-	if (currentpts.value >= 1000) {
+	if (spacing >= 1000) {
 		puntuation_x = 704;
 	}
-	if (currentpts.value >= 10000) {
+	if (spacing >= 10000) {
 		puntuation_x = 672;
 	}
-	if (currentpts.value >= 100000) {
+	if (spacing >= 100000) {
 		puntuation_x = 640;
 	}
-	if (currentpts.value >= 1000000) {
+	if (spacing >= 1000000) {
 		puntuation_x = 608;
 	}
-	if (currentpts.value >= 10000000) {
+	if (spacing >= 10000000) {
 		puntuation_x = 576;
 	}
-	if (currentpts.value >= 100000000) {
+	if (spacing >= 100000000) {
 		puntuation_x = 544;
-		currentpts.value = 100000000;
+		spacing = 100000000;
 	}
 	
 	App->fonts->BlitText(puntuation_x,2, font_puntuation,text);
@@ -560,13 +570,23 @@ void ModuleScenePinball::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 void ModuleScenePinball::MoveCamera() {
 	
 	if (state == START) {
-		App->renderer->camera.y = 0;
+		if (movecam) {
+			App->renderer->camera.y--;
+		}
+		if (!movecam) {
+			App->renderer->camera.y++;
+		}
+		if (App->renderer->camera.y > -1) {
+			movecam = !movecam;
+		}
+		if (App->renderer->camera.y < -384) {
+			movecam = !movecam;
+		}
 	}
 	if (state == PLAY) {
 		int x, y;
 		ball->GetPosition(x, y);
 		App->renderer->camera.y = -1 * y + SCREEN_HEIGHT / 2;
-		LOG("%d", App->renderer->camera.y);
 		if (App->renderer->camera.y > 0) {
 			App->renderer->camera.y = 0;
 		}
@@ -574,14 +594,26 @@ void ModuleScenePinball::MoveCamera() {
 			App->renderer->camera.y = -385;
 		}
 	}
-	//385
-	if (state == END) {
 
+	if (state == END) {
+		if (movecam) {
+			App->renderer->camera.y--;
+		}
+		if (!movecam) {
+			App->renderer->camera.y++;
+		}
+		if (App->renderer->camera.y > -1) {
+			movecam = !movecam;
+		}
+		if (App->renderer->camera.y < -384) {
+			movecam = !movecam;
+		}
 	}
 	
 	}
 
 void ModuleScenePinball::Input() {
+	if(state == PLAY){
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
 		FlipperLJoint->SetMotorSpeed(1000 * DEGTORAD);
@@ -611,10 +643,30 @@ void ModuleScenePinball::Input() {
 		KickerjointMotor = 0;
 
 	}
-	if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN) {
-		LOG("%d", ignitioncounter);
 	}
-	
+	if (state != PLAY) {
+		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+		{
+			ball->transform = true;
+			balls = 3;
+			state = PLAY;
+		}
+	}
+	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	{
+		CurrScore = true;
+		PrevScore = MaxScore = false;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+	{
+		PrevScore = true;
+		CurrScore = MaxScore = false;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_4) == KEY_DOWN)
+	{
+		MaxScore = true;
+		CurrScore = PrevScore = false;
+	}
 	
 }
 
@@ -954,19 +1006,21 @@ void ModuleScenePinball::blitbuttons()
 
 void ModuleScenePinball::Death() {
 	
-	if (balls != 1) {
-		ball->transform = true;
+	if (balls >= 1) {
+		balls--;
+			if (balls > 0) {
+			ball->transform = true;
+		}
+			else {
+				state = END;
+				if (currentpts.value > highestpts.value) {
+					highestpts = currentpts;
+				}
+				previouspts = currentpts;
+				currentpts.value = 0;
+				currentpts.multipilier = 1;
+				movecam = false;
+			}
 	}
-	else {
-		end = true;
-	}
-	balls--;
-}
 
-void ModuleScenePinball::Restart() {
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN && end == true)
-	{
-		ball->transform = true;
-		balls = 3;
-	}
 }

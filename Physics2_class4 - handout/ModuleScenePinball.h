@@ -55,11 +55,15 @@ public:
 	void Passage();
 	void blitbuttons();
 	void Death();
-	void Restart();
+	
 
 private:
 	scene_state state;
 	punctuation currentpts;
+	punctuation previouspts;
+	punctuation highestpts;
+	bool CurrScore, PrevScore, MaxScore;
+
 
 	PhysBody* ball;
 
@@ -112,16 +116,16 @@ private:
 	PhysBody* G_sensor;
 	PhysBody* H_sensor;
 	PhysBody* T_sensor;
-
 	PhysBody* Passage_Sensor;
 
 	SDL_Texture* board;
 	SDL_Texture* flipper_Left;
 	SDL_Texture* flipper_Right;
-	SDL_Texture* balltxt;
+	SDL_Texture* balltex;
 	SDL_Texture* bar_points;
 
-
+	//Camera
+	bool movecam = true;
 	// Constants for blit flipper Right
 	float Flipper_R_rotation = 0;
 	int Flipper_R_positon_x = 0;

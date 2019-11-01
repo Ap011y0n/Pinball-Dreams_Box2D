@@ -67,7 +67,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, char* name, b2Bo
 	b2BodyDef body;
 	body.type = type;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
-	body.gravityScale = 1,2;
+	body.gravityScale = 1;
 	b2Body* b = world->CreateBody(&body);
 	b2CircleShape shape;
 
