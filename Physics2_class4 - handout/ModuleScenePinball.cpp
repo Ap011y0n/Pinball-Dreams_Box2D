@@ -227,6 +227,8 @@ bool ModuleScenePinball::Start()
 	Words = App->textures->Load("pinball/word.png");
 
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
+	App->audio->PlayMusic("Music/Soundtrack_1.ogg");
+
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 
