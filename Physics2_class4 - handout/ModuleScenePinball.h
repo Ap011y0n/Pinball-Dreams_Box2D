@@ -168,6 +168,7 @@ private:
 	int puntuation_x;
 	bool end;
 	float KickerjointMotor;
+	bool collectFuel;
 	
 
 	//Animations

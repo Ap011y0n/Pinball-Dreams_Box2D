@@ -776,22 +776,26 @@ void ModuleScenePinball::Warp(uint index) {
 }
 //receives a light bool, and activates it
 void ModuleScenePinball::Light(bool &active) {
-	active = true;
 	if (L2active && Iactive && Gactive && Hactive && Tactive) {
+		L2active = Iactive = Gactive = Hactive = Tactive = false;
+	}
+		active = true;
+	if (L2active && Iactive && Gactive && Hactive && Tactive) {
+
 		if (lightcounter == 3) {
-			LOG("contador %d", lightcounter);
-			currentpts += 10000000;
-			lightcounter = 1;
-			L2active = Iactive = Gactive = Hactive = Tactive = false;
+			currentpts += 1500000;	
+			lightcounter++;
 		}
 		if (lightcounter == 2) {
-			currentpts += 5000000;
-			LOG("contador %d", lightcounter);
+			currentpts += 1000000;
 			lightcounter++;
 		}
 		if (lightcounter == 1) {
-			LOG("contador %d", lightcounter);
+			currentpts += 500000;
 			lightcounter++;
+		}
+		if (lightcounter == 4) {
+			lightcounter = 1;
 		}
 	}
 }
@@ -845,22 +849,29 @@ void ModuleScenePinball::SunRun() {
 void ModuleScenePinball::Fuel(bool &active) {
 	active = true;
 	if (Factive && Uactive && Eactive && Lactive) {
-		Factive = Uactive = Eactive = Lactive = false;
-		//CollectFuel
-		LOG("CollectFuel");
+		collectFuel = true;
 	}
 }
 
 void ModuleScenePinball::Ignition(bool &active) {
+	if (Ignition1 && Ignition2 && Ignition3) {
+		Ignition1 = Ignition2 = Ignition3 = false;
+	}
 	active = true;
 	if (Ignition1 && Ignition2 && Ignition3) {
 		if (ignitioncounter < 8) { ignitioncounter++; }
-		else { ignitioncounter = 0; }
-		Ignition1 = Ignition2 = Ignition3 = false;
+		else { ignitioncounter = 0; 
+		}
+		
 	}
 }
 void ModuleScenePinball::Passage() {
 	DoorLJoint->EnableMotor(true);
+	if (collectFuel) {
+		Factive = Uactive = Eactive = Lactive = false;
+		currentpts += 500000;
+		collectFuel = false;
+	}
 	if (passagecounter < 7) {
 		passagecounter++;
 	}
@@ -1089,4 +1100,5 @@ void ModuleScenePinball::ResetVar() {
 	ignitioncounter = 0u;
 	passagecounter = 0u;
 	currentpts.multipilier = 1;
+	collectFuel = false;
 }
