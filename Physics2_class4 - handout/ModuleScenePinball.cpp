@@ -162,6 +162,11 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 	number_2500.y = 35;
 	number_2500.w = 34;
 	number_2500.h = 34;
+
+	blue_button.x = 0;
+	blue_button.y = 0;
+	blue_button.w = 32;
+	blue_button.h = 32;
 	
 }
 
@@ -196,6 +201,7 @@ bool ModuleScenePinball::Start()
 	warp_button = App->textures->Load("pinball/Warp_letters.png");
 	multiplier_button = App->textures->Load("pinball/multiplier_letters.png");
 	numbers_buttons = App->textures->Load("pinball/numbers_buttons.png");
+	Blue_button = App->textures->Load("pinball/blue_button.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -442,8 +448,12 @@ bool ModuleScenePinball::Start()
 	G_sensor = App->physics->CreateRectangleSensor( 756, 351, 5, 30, "G_sensor" , -10);
 	H_sensor = App->physics->CreateRectangleSensor( 767, 394, 5, 30, "H_sensor" , -10);
 	T_sensor = App->physics->CreateRectangleSensor( 778, 437, 5, 30, "T_sensor" , -10);
-	
+	Blue_sensor = App->physics->CreateRectangleSensor(735, 900, 30, 5, "Blue_sensor",0);
+	Blue_sensor_out = App->physics->CreateRectangleSensor(700, 977, 30, 5, "Blue_sensor_out", 45);
+	Blue_sensor_2 = App->physics->CreateRectangleSensor(248, 900, 30, 5, "Blue_sensor_2", 0);
+	Blue_sensor_out_2 = App->physics->CreateRectangleSensor(300, 980, 30, 5, "Blue_sensor_out_2", -45);
 	Passage_Sensor = App->physics->CreateRectangleSensor(362, 191, 5, 30, "Passage_Sensor", -45);
+	
 
 	//joints
 	FlipperLJoint = App->physics->CreateRevoluteJoint(FlipperL->body, rotAxisL->body, 20, 24, 0, 40);
@@ -474,6 +484,7 @@ bool ModuleScenePinball::CleanUp()
 	App->textures->Unload(warp_button);
 	App->textures->Unload(multiplier_button);
 	App->textures->Unload(numbers_buttons);
+	App->textures->Unload(Blue_button);
 	return true;
 }
 
@@ -776,22 +787,26 @@ void ModuleScenePinball::Warp(uint index) {
 }
 //receives a light bool, and activates it
 void ModuleScenePinball::Light(bool &active) {
-	active = true;
 	if (L2active && Iactive && Gactive && Hactive && Tactive) {
+		L2active = Iactive = Gactive = Hactive = Tactive = false;
+	}
+		active = true;
+	if (L2active && Iactive && Gactive && Hactive && Tactive) {
+
 		if (lightcounter == 3) {
-			LOG("contador %d", lightcounter);
-			currentpts += 10000000;
-			lightcounter = 1;
-			L2active = Iactive = Gactive = Hactive = Tactive = false;
+			currentpts += 1500000;	
+			lightcounter++;
 		}
 		if (lightcounter == 2) {
-			currentpts += 5000000;
-			LOG("contador %d", lightcounter);
+			currentpts += 1000000;
 			lightcounter++;
 		}
 		if (lightcounter == 1) {
-			LOG("contador %d", lightcounter);
+			currentpts += 500000;
 			lightcounter++;
+		}
+		if (lightcounter == 4) {
+			lightcounter = 1;
 		}
 	}
 }
@@ -845,22 +860,29 @@ void ModuleScenePinball::SunRun() {
 void ModuleScenePinball::Fuel(bool &active) {
 	active = true;
 	if (Factive && Uactive && Eactive && Lactive) {
-		Factive = Uactive = Eactive = Lactive = false;
-		//CollectFuel
-		LOG("CollectFuel");
+		collectFuel = true;
 	}
 }
 
 void ModuleScenePinball::Ignition(bool &active) {
+	if (Ignition1 && Ignition2 && Ignition3) {
+		Ignition1 = Ignition2 = Ignition3 = false;
+	}
 	active = true;
 	if (Ignition1 && Ignition2 && Ignition3) {
 		if (ignitioncounter < 8) { ignitioncounter++; }
-		else { ignitioncounter = 0; }
-		Ignition1 = Ignition2 = Ignition3 = false;
+		else { ignitioncounter = 0; 
+		}
+		
 	}
 }
 void ModuleScenePinball::Passage() {
 	DoorLJoint->EnableMotor(true);
+	if (collectFuel) {
+		Factive = Uactive = Eactive = Lactive = false;
+		currentpts += 500000;
+		collectFuel = false;
+	}
 	if (passagecounter < 7) {
 		passagecounter++;
 	}
@@ -959,7 +981,19 @@ void ModuleScenePinball::getSensor(char* name) {
 	if (name == "Passage_Sensor") {
 		Passage();
 	}
-
+	if (name == "Blue_sensor") {
+		sensor_Blue = true;
+	}
+	if (name == "Blue_sensor_out") {
+		sensor_Blue = false;
+	}
+	if (name == "Blue_sensor_2") {
+		sensor_Blue2 = true;
+	}
+	if (name == "Blue_sensor_out_2") {
+		sensor_Blue2 = false;
+	}
+	
 }
 
 void ModuleScenePinball::blitbuttons()
@@ -1064,7 +1098,13 @@ void ModuleScenePinball::blitbuttons()
 	}
 	if (passagecounter == 7) {
 		App->renderer->Blit(numbers_buttons, 314, 204, &number_2500);
+	}
 
+	if (sensor_Blue == true) {
+		App->renderer->Blit(Blue_button, 718, 879, &blue_button);
+	}
+	if (sensor_Blue2 == true) {
+		App->renderer->Blit(Blue_button, 230, 879, &blue_button);
 	}
 
 
@@ -1102,4 +1142,5 @@ void ModuleScenePinball::ResetVar() {
 	ignitioncounter = 0u;
 	passagecounter = 0u;
 	currentpts.multipilier = 1;
+	collectFuel = false;
 }

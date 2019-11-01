@@ -126,6 +126,10 @@ private:
 	PhysBody* H_sensor;
 	PhysBody* T_sensor;
 	PhysBody* Passage_Sensor;
+	PhysBody* Blue_sensor;
+	PhysBody* Blue_sensor_out;
+	PhysBody* Blue_sensor_2;
+	PhysBody* Blue_sensor_out_2;
 
 	SDL_Texture* board;
 	SDL_Texture* flipper_Left;
@@ -168,7 +172,13 @@ private:
 	int puntuation_x;
 	bool end;
 	float KickerjointMotor;
+<<<<<<< HEAD
+	bool sensor_Blue;
+	bool sensor_Blue2;
+=======
+	bool collectFuel;
 	
+>>>>>>> a55897d01c0b70fe8ed22122f6e9719896ec4221
 
 	//Animations
 	SDL_Texture* fuel;
@@ -213,6 +223,9 @@ private:
 	SDL_Rect number_750;
 	SDL_Rect number_1000;
 	SDL_Rect number_2500;
+
+	SDL_Texture* Blue_button;
+	SDL_Rect blue_button;
 
 };
 
