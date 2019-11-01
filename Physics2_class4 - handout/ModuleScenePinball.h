@@ -82,7 +82,7 @@ private:
 	PhysBody* Target2;
 	PhysBody* Map;
 
-	// sensor PhysBody* Hole;
+	
 
 	PhysBody* kickerBase;
 	PhysBody* kicker;
@@ -98,6 +98,7 @@ private:
 	b2PrismaticJoint* DoorLJoint;
 	b2PrismaticJoint* DoorRJoint;
 
+	PhysBody* Hole;
 	PhysBody* DoorSensor;
 
 	PhysBody* DeathSensor;
@@ -162,7 +163,7 @@ private:
 	bool Sun1, Sun2, Sun3, Sun1Reward, Sun2Reward, Sun3Reward;
 	uint Suncounter = 1u;
 	bool Ignition1, Ignition2, Ignition3;
-	uint ignitioncounter;
+	int ignitionit;
 	uint passagecounter;
 	uint puntuation;
 	int puntuation_x;
@@ -170,7 +171,6 @@ private:
 	float KickerjointMotor;
 	bool collectFuel;
 	
-
 	//Animations
 	SDL_Texture* fuel;
 	SDL_Rect F_fuel;
@@ -214,6 +214,10 @@ private:
 	SDL_Rect number_750;
 	SDL_Rect number_1000;
 	SDL_Rect number_2500;
+
+	SDL_Texture* ignition;
+	SDL_Rect ignitionRect[9];
+
 
 };
 

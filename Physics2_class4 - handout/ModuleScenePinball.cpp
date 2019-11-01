@@ -162,6 +162,13 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 	number_2500.y = 35;
 	number_2500.w = 34;
 	number_2500.h = 34;
+	int width = 342, x = 0;
+	for (int i = 0; i < 9; i++) {
+		ignitionRect[i].x = x+width*i;
+		ignitionRect[i].y = 0;
+		ignitionRect[i].h = 80;
+		ignitionRect[i].w = 342;
+	}
 	
 }
 
@@ -196,6 +203,7 @@ bool ModuleScenePinball::Start()
 	warp_button = App->textures->Load("pinball/Warp_letters.png");
 	multiplier_button = App->textures->Load("pinball/multiplier_letters.png");
 	numbers_buttons = App->textures->Load("pinball/numbers_buttons.png");
+	ignition = App->textures->Load("pinball/ignition.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -424,6 +432,8 @@ bool ModuleScenePinball::Start()
 
 	sun = App->physics->CreateRectangleSensor(753, 620, 30, 100, "sun", 25);
 
+	Hole = App->physics->CreateRectangleSensor(268, 408, 37, 37, "Hole", 60);
+
 	F_sensor = App->physics->CreateRectangleSensor(218, 575, 37, 37, "F_sensor");
 	U_sensor = App->physics->CreateRectangleSensor(218, 622, 37, 37, "U_sensor");
 	E_sensor = App->physics->CreateRectangleSensor(218, 669, 37, 37, "E_sensor");
@@ -453,6 +463,7 @@ bool ModuleScenePinball::Start()
 	SSRJoint = App->physics->CreatePrismaticJoint(SSRPistonBase->body, SSRPiston->body, 0, -10, 20, 30, 400, -66, -0.5, 0.5);
 	DoorLJoint = App->physics->CreatePrismaticJoint(Map->body, doorL->body, 365, 115, -20, 100, 4000, -40, -0.5, 0.5);
 	DoorRJoint = App->physics->CreatePrismaticJoint(Map->body, doorR->body, 760, 115, -20, 100, 4000, 35, 0.5, 0.5);
+	
 	ball->listener = this;
 
 	return ret;
@@ -474,6 +485,7 @@ bool ModuleScenePinball::CleanUp()
 	App->textures->Unload(warp_button);
 	App->textures->Unload(multiplier_button);
 	App->textures->Unload(numbers_buttons);
+	App->textures->Unload(ignition);
 	return true;
 }
 
@@ -517,6 +529,7 @@ update_status ModuleScenePinball::Update()
 	blitbuttons(); //This function will make all the blits for the animations
 	App->renderer->Blit(balltex, x, y, NULL, 1.0f, 0, 15, 15);
 	App->renderer->Blit(bar_points,142, -App->renderer->camera.y+1, NULL, 1.0f, 0, 0, 0);
+	App->renderer->Blit(ignition, 318, 663, &ignitionRect[ignitionit]);
 	
 	//Puntuation
 	int spacing;
@@ -701,6 +714,7 @@ void ModuleScenePinball::Input() {
 		CurrScore = PrevScore = false;
 	}
 	
+	
 }
 
 //recives an index and lights that letter, if that letter was already lightened, activates it,
@@ -856,13 +870,13 @@ void ModuleScenePinball::Fuel(bool &active) {
 void ModuleScenePinball::Ignition(bool &active) {
 	if (Ignition1 && Ignition2 && Ignition3) {
 		Ignition1 = Ignition2 = Ignition3 = false;
+		if (ignitionit == 8) {
+			ignitionit = 0;
+		}
 	}
 	active = true;
 	if (Ignition1 && Ignition2 && Ignition3) {
-		if (ignitioncounter < 8) { ignitioncounter++; }
-		else { ignitioncounter = 0; 
-		}
-		
+		if (ignitionit < 8) { ignitionit++; }
 	}
 }
 void ModuleScenePinball::Passage() {
@@ -906,6 +920,9 @@ void ModuleScenePinball::Passage() {
 void ModuleScenePinball::getSensor(char* name) {
 	if (name == "Door_Sensor") {
 		DoorRJoint->EnableMotor(true);
+	}
+	if (name == "Hole") {
+		balls++;
 	}
 	if (name == "DeathSensor") {
 		Death();
@@ -1110,8 +1127,8 @@ void ModuleScenePinball::ResetVar() {
 	Sun1 = Sun2 = Sun3 = Sun1Reward = Sun2Reward = Sun3Reward = false;
 	Suncounter = 1u;
 	Ignition1 = Ignition2 = Ignition3 = false;
-	ignitioncounter = 0u;
 	passagecounter = 0u;
 	currentpts.multipilier = 1;
 	collectFuel = false;
+	ignitionit = 0;
 }
