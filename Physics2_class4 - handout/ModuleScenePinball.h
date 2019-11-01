@@ -172,13 +172,11 @@ private:
 	int puntuation_x;
 	bool end;
 	float KickerjointMotor;
-<<<<<<< HEAD
+
 	bool sensor_Blue;
 	bool sensor_Blue2;
-=======
 	bool collectFuel;
 	
->>>>>>> a55897d01c0b70fe8ed22122f6e9719896ec4221
 
 	//Animations
 	SDL_Texture* fuel;
