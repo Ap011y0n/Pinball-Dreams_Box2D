@@ -225,12 +225,18 @@ bool ModuleScenePinball::Start()
 	Blue_button = App->textures->Load("pinball/blue_button.png");
 	Red_square = App->textures->Load("pinball/red_bar.png");
 	Words = App->textures->Load("pinball/word.png");
-
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
-	App->audio->PlayMusic("Music/Soundtrack_1.ogg");
-
+	//Music and Fx
+	App->audio->PlayMusic("Music/Soundtrack_1_.ogg");//THIS IS THE VERSION LOW VOLUME FOR THE SOUNDTRACK SO WE CAN HEAR ALL THE FX
+	App->audio->LoadFx("Music/50_giant_ball_fx.wav");
+	App->audio->LoadFx("Music/flippers_fx.wav");
+	App->audio->LoadFx("Music/warp_fx.wav");
+	App->audio->LoadFx("Music/triangle_fx.wav");
+	App->audio->LoadFx("Music/spell_inition_fx.wav");
+	App->audio->LoadFx("Music/fuel_fx.wav");
+	App->audio->LoadFx("Music/losing_fx.wav");
 	App->renderer->camera.x = App->renderer->camera.y = 0;
-
+	
 
 	
 	CreateBodies();
@@ -380,9 +386,10 @@ void ModuleScenePinball::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if (bodyB)
 	{
-		if (bodyB->name == "SSRPiston")SSRJoint->EnableMotor(true);
-		if (bodyB->name == "SSLPiston")SSLJoint->EnableMotor(true);
+		if (bodyB->name == "SSRPiston") { SSRJoint->EnableMotor(true); App->audio->PlayFx(4, 0);}
+		if (bodyB->name == "SSLPiston") { SSLJoint->EnableMotor(true); App->audio->PlayFx(4, 0);}
 		if (bodyB->name == "Bumper1" || bodyB->name == "Bumper2") {
+			App->audio->PlayFx(1, 0);
 			int x1 = 0, x2 = 0;
 			b2Vec2 vect(x1, x2);
 			ball->GetPosition(x1, x2);
@@ -396,6 +403,9 @@ void ModuleScenePinball::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		}
 		bodyB->GetPosition(x, y);
 		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
+		if (bodyB->name == "Flipper_R"|| bodyB->name == "Flipper_L") {
+			App->audio->PlayFx(2, 0);
+		}
 	}
 }
 
@@ -721,30 +731,38 @@ void ModuleScenePinball::getSensor(char* name) {
 	}
 	if (name == "DeathSensor") {
 		Death();
+		App->audio->PlayFx(7, 0);
 	}
 	if (name == "ignition1") {
 		Ignition(Ignition1);
+		App->audio->PlayFx(5, 0);
 	}
 	if (name == "ignition2") {
 		Ignition(Ignition2);
+		App->audio->PlayFx(5, 0);
 	}
 	if (name == "ignition3") {
 		Ignition(Ignition3);
+		App->audio->PlayFx(5, 0);
 	}
 	if (name == "sun") {
 		SunRun();
 	}
 	if (name == "F_sensor") {
 		Fuel(Factive);
+		App->audio->PlayFx(6, 0);
 	}
 	if (name == "U_sensor") {
 		Fuel(Uactive);
+		App->audio->PlayFx(6, 0);
 	}
 	if (name == "E_sensor") {
 		Fuel(Eactive);
+		App->audio->PlayFx(6, 0);
 	}
 	if (name == "L_sensor") {
 		Fuel(Lactive);
+		App->audio->PlayFx(6, 0);
 	}
 	if (name == "sensor500") {
 		FiveHpts(FiveH1);
@@ -754,15 +772,19 @@ void ModuleScenePinball::getSensor(char* name) {
 	}
 	if (name == "W_sensor") {
 		Warp(1);
+		App->audio->PlayFx(3, 0);
 	}
 	if (name == "A_sensor") {
 		Warp(2);
+		App->audio->PlayFx(3, 0);
 	}
 	if (name == "R_sensor") {
 		Warp(3);
+		App->audio->PlayFx(3, 0);
 	}
 	if (name == "P_sensor") {
 		Warp(4);
+		App->audio->PlayFx(3, 0);
 	}
 	if (name == "L2_sensor") {
 		Light(L2active);
