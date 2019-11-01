@@ -127,6 +127,41 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 	multiplier_x8.y = 0;
 	multiplier_x8.w = 58;
 	multiplier_x8.h = 29;
+
+	number_50.x = 0;
+	number_50.y = 0;
+	number_50.w = 34;
+	number_50.h = 34;
+
+	number_100.x = 35;
+	number_100.y = 0;
+	number_100.w = 34;
+	number_100.h = 34;
+
+	number_250.x = 70;
+	number_250.y = 0;
+	number_250.w = 34;
+	number_250.h = 34;
+
+	number_500.x = 105;
+	number_500.y = 0;
+	number_500.w = 34;
+	number_500.h = 34;
+
+	number_750.x = 0;
+	number_750.y = 35;
+	number_750.w = 34;
+	number_750.h = 34;
+
+	number_1000.x = 35;
+	number_1000.y = 35;
+	number_1000.w = 34;
+	number_1000.h = 34;
+
+	number_2500.x = 70;
+	number_2500.y = 35;
+	number_2500.w = 34;
+	number_2500.h = 34;
 	
 }
 
@@ -160,6 +195,7 @@ bool ModuleScenePinball::Start()
 	sun_button = App->textures->Load("pinball/sun_letters.png");
 	warp_button = App->textures->Load("pinball/Warp_letters.png");
 	multiplier_button = App->textures->Load("pinball/multiplier_letters.png");
+	numbers_buttons = App->textures->Load("pinball/numbers_buttons.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -437,13 +473,14 @@ bool ModuleScenePinball::CleanUp()
 	App->textures->Unload(sun_button);
 	App->textures->Unload(warp_button);
 	App->textures->Unload(multiplier_button);
+	App->textures->Unload(numbers_buttons);
 	return true;
 }
 
 // Update: draw background
 update_status ModuleScenePinball::Update()
 {
-	Ball_rotation = ball->GetRotation();
+	
 
 	Flipper_L_rotation = FlipperL->GetRotation();
 	FlipperL->GetPosition(Flipper_L_positon_x, Flipper_L_positon_y);
@@ -478,7 +515,7 @@ update_status ModuleScenePinball::Update()
 	App->renderer->Blit(flipper_Left, (Flipper_L_positon_x+5),(Flipper_L_positon_y+10), NULL, 1.0f, Flipper_L_rotation, -5, -5);
 	App->renderer->Blit(flipper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y +5), NULL, 1.0f, Flipper_R_rotation, -1,0);
 	blitbuttons(); //This function will make all the blits for the animations
-	App->renderer->Blit(balltex, x, y, NULL, 1.0f, Ball_rotation, 15, 15);
+	App->renderer->Blit(balltex, x, y, NULL, 1.0f, 0, 15, 15);
 	App->renderer->Blit(bar_points,142, -App->renderer->camera.y+1, NULL, 1.0f, 0, 0, 0);
 	
 	//Puntuation
@@ -519,8 +556,8 @@ update_status ModuleScenePinball::Update()
 		spacing = 100000000;
 	}
 	
-	App->fonts->BlitText(puntuation_x,2, font_puntuation,text);
-	App->fonts->BlitText(320, 2, font_puntuation, lives);
+	App->fonts->BlitText(puntuation_x-1,4, font_puntuation,text);
+	App->fonts->BlitText(319, 4, font_puntuation, lives);
 	return UPDATE_CONTINUE;
 }
 
@@ -1000,6 +1037,19 @@ void ModuleScenePinball::blitbuttons()
 	}
 	if (currentpts.multipilier == 8) {
 		App->renderer->Blit(multiplier_button, 645, 111, &multiplier_x8);
+	}
+
+	if (passagecounter == 1) {
+		App->renderer->Blit(numbers_buttons, 200, 433, &number_50);
+	}
+	if (passagecounter == 2) {
+		App->renderer->Blit(numbers_buttons, 194, 388, &number_100);
+	}
+	if (passagecounter == 3) {
+		App->renderer->Blit(numbers_buttons, 197, 342 , &number_250);
+	}
+	if (passagecounter == 4) {
+		App->renderer->Blit(numbers_buttons, 220, 303, &number_500);
 	}
 
 }

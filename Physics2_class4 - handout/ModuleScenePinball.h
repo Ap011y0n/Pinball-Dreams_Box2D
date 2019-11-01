@@ -145,9 +145,6 @@ private:
 	int Flipper_L_positon_x = 0;
 	int Flipper_L_positon_y = 0;
 
-	//Constants for blit ball
-	float Ball_rotation = 0;
-
 	//Constant for blit puntuation_bar
 	
 	//Puntuation variables
@@ -207,6 +204,15 @@ private:
 	SDL_Rect multiplier_x4;
 	SDL_Rect multiplier_x6;
 	SDL_Rect multiplier_x8;
+
+	SDL_Texture* numbers_buttons;
+	SDL_Rect number_50;
+	SDL_Rect number_100;
+	SDL_Rect number_250;
+	SDL_Rect number_500;
+	SDL_Rect number_750;
+	SDL_Rect number_1000;
+	SDL_Rect number_2500;
 
 };
 
