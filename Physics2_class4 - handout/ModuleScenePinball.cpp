@@ -861,7 +861,7 @@ void ModuleScenePinball::Ignition(bool &active) {
 }
 void ModuleScenePinball::Passage() {
 	DoorLJoint->EnableMotor(true);
-	if (passagecounter < 6) {
+	if (passagecounter < 7) {
 		passagecounter++;
 	}
 	else { 
@@ -881,9 +881,12 @@ void ModuleScenePinball::Passage() {
 		currentpts += 500000;
 		break;
 	case 5:
-		currentpts += 1000000;
+		currentpts += 7500000;
 		break;
 	case 6:
+		currentpts += 1000000;
+		break;
+	case 7:
 		currentpts += 2500000;
 		break;
 	}
