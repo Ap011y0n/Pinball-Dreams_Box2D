@@ -218,6 +218,8 @@ bool ModuleScenePinball::Start()
 	Blue_button = App->textures->Load("pinball/blue_button.png");
 	Red_square = App->textures->Load("pinball/red_bar.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
+	App->audio->PlayMusic("Music/Soundtrack_1.ogg");
+
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 
