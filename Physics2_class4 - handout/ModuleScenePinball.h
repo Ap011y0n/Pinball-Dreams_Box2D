@@ -196,5 +196,14 @@ private:
 	SDL_Rect multiplier_x6;
 	SDL_Rect multiplier_x8;
 
+	SDL_Texture* numbers_buttons;
+	SDL_Rect number_50;
+	SDL_Rect number_100;
+	SDL_Rect number_250;
+	SDL_Rect number_500;
+	SDL_Rect number_750;
+	SDL_Rect number_1000;
+	SDL_Rect number_2500;
+
 };
 
