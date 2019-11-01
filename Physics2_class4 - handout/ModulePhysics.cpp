@@ -16,7 +16,7 @@ ModulePhysics::ModulePhysics(Application* app, bool start_enabled) : Module(app,
 {
 	world = NULL;
 	mouse_joint = NULL;
-	debug = true;
+	debug = false;
 }
 
 // Destructor
@@ -275,6 +275,13 @@ update_status ModulePhysics::PostUpdate()
 
 	for(b2Body* b = world->GetBodyList(); b; b = b->GetNext())
 	{
+		PhysBody* phys = (PhysBody*)b->GetUserData();
+		if (phys && phys->transform) {
+			phys->transform = false;
+			b2Vec2 pos(PIXEL_TO_METERS(phys->xtransform), PIXEL_TO_METERS(phys->ytransform));
+				b->SetTransform(pos, 0);
+		}
+
 		for(b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
 		{
 			switch(f->GetType())
@@ -415,6 +422,7 @@ void PhysBody::GetPosition(int& x, int &y) const
 	x = METERS_TO_PIXELS(pos.x) - (width);
 	y = METERS_TO_PIXELS(pos.y) - (height);
 }
+
 
 float PhysBody::GetRotation() const
 {

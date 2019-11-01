@@ -47,6 +47,8 @@ public:
 	void SunRun();
 	void Passage();
 	void blitbuttons();
+	void Death();
+	void Restart();
 
 private:
 	punctuation currentpts;
@@ -130,6 +132,8 @@ private:
 	//Puntuation variables
 	int font_puntuation = -1;
 	char text[10];
+	char lives[10];
+	uint balls;
 
 	//Sensor bools
 	bool warp, Wlight, Alight, Rlight, Plight, Wactive, Aactive, Ractive, Pactive;
@@ -142,9 +146,10 @@ private:
 	bool Ignition1, Ignition2, Ignition3;
 	uint ignitioncounter;
 	uint passagecounter;
-
 	uint puntuation;
 	int puntuation_x;
+	bool end;
+	
 
 	//Animations
 	SDL_Texture* fuel;

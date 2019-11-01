@@ -53,7 +53,7 @@ update_status ModuleSceneIntro::Update()
 		ray.y = App->input->GetMouseY();
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	/*if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
 		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 25));
 		circles.getLast()->data->listener = this;
@@ -104,7 +104,7 @@ update_status ModuleSceneIntro::Update()
 
 		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 64, "", b2_dynamicBody));
 		
-	}
+	}*/
 	/*void SetMotorSpeed(float speed);
 	App->physics->revolutejoint->SetMotorSpeed(1000);
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT) {

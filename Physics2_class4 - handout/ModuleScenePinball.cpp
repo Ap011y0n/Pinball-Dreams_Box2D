@@ -78,6 +78,8 @@ bool ModuleScenePinball::Start()
 	Ignition1 = Ignition2 = Ignition3 = false;
 	ignitioncounter = 0u;
 	passagecounter = 0u;
+	balls = 3;
+	end = false;
 
 	board = App->textures->Load("pinball/pinball_board_2.png");
 	flipper_Left = App->textures->Load("pinball/fliper_Left.png");
@@ -279,6 +281,8 @@ bool ModuleScenePinball::Start()
 
 	//Ball
 	ball = App->physics->CreateCircle(810, 1070, 15, "ball", b2_dynamicBody, 0.4);
+	ball->xtransform = 810;
+	ball->ytransform = 1070;
 	//ball = App->physics->CreateCircle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 15, "ball", b2_staticBody, 0.4);
 	//map components
 	rotAxisL = App->physics->CreateCircle(358, 1040, 10,"rotAxisL", b2_staticBody);
@@ -379,6 +383,7 @@ update_status ModuleScenePinball::Update()
 	if (SSLJoint->IsMotorEnabled())SSLJoint->EnableMotor(false);
 	if (puntuation_bar_max <= -2) {puntuation_bar_max = -2;}
 	Input();
+	Restart();
 
 	p2SString title("Pinball_Dreams Box2D  mouse.x:%d mouse.y %d",
 	App->input->GetMouseX(), App->input->GetMouseY());
@@ -397,6 +402,8 @@ update_status ModuleScenePinball::Update()
 	
 	//Puntuation
 	sprintf_s(text, 10, "%d",currentpts.value);
+	sprintf_s(lives, 10, "%d", balls);
+
 	if (currentpts.value < 9) {
 		puntuation_x = 800;
 	}
@@ -427,6 +434,7 @@ update_status ModuleScenePinball::Update()
 	}
 	
 	App->fonts->BlitText(puntuation_x,2, font_puntuation,text);
+	App->fonts->BlitText(320, 2, font_puntuation, lives);
 	return UPDATE_CONTINUE;
 }
 
@@ -692,6 +700,7 @@ void ModuleScenePinball::Passage() {
 //Receives the name of a sensor, then starts a determinate proces depending of it's name property
 void ModuleScenePinball::getSensor(char* name) {
 	if (name == "DeathSensor") {
+		Death();
 	}
 	if (name == "ignition1") {
 		Ignition(Ignition1);
@@ -799,3 +808,21 @@ void ModuleScenePinball::blitbuttons()
 
 }
 
+void ModuleScenePinball::Death() {
+	
+	if (balls != 1) {
+		ball->transform = true;
+	}
+	else {
+		end = true;
+	}
+	balls--;
+}
+
+void ModuleScenePinball::Restart() {
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN && end == true)
+	{
+		ball->transform = true;
+		balls = 3;
+	}
+}
