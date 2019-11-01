@@ -32,7 +32,6 @@ public:
 	bool transform = false;
 	int xtransform = 0, ytransform = 0;
 	b2Body* body;
-	
 	Module* listener;
 };
 

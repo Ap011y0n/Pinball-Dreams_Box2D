@@ -86,6 +86,7 @@ bool ModuleScenePinball::Start()
 	balls = 3;
 	end = false;
 	KickerjointMotor = 0;
+	state = PLAY;
 
 	board = App->textures->Load("pinball/pinball_board_2.png");
 	flipper_Left = App->textures->Load("pinball/fliper_Left.png");
@@ -380,7 +381,6 @@ update_status ModuleScenePinball::Update()
 
 	int x, y;
 	ball->GetPosition(x, y);
-	puntuation_bar_max = y - 386;
 
 	FlipperLJoint->SetMotorSpeed(-1000 * DEGTORAD);
 	FlipperRJoint->SetMotorSpeed(1000 * DEGTORAD);
@@ -388,7 +388,7 @@ update_status ModuleScenePinball::Update()
 	if (KickerJoint->IsMotorEnabled())KickerJoint->EnableMotor(false);
 	if(SSRJoint->IsMotorEnabled())SSRJoint->EnableMotor(false);
 	if (SSLJoint->IsMotorEnabled())SSLJoint->EnableMotor(false);
-	if (puntuation_bar_max <= -2) {puntuation_bar_max = -2;}
+
 	Input();
 	Restart();
 
@@ -405,7 +405,7 @@ update_status ModuleScenePinball::Update()
 	App->renderer->Blit(flipper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y +5), NULL, 1.0f, Flipper_R_rotation, -1,0);
 	blitbuttons(); //This function will make all the blits for the animations
 	App->renderer->Blit(balltxt, x, y, NULL, 1.0f, Ball_rotation, 15, 15);
-	App->renderer->Blit(bar_points,142, puntuation_bar_max, NULL, 1.0f, 0, 0, 0);
+	App->renderer->Blit(bar_points,142, -App->renderer->camera.y, NULL, 1.0f, 0, 0, 0);
 	
 	//Puntuation
 	sprintf_s(text, 10, "%d",currentpts.value);
@@ -485,14 +485,28 @@ void ModuleScenePinball::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 }
 
 void ModuleScenePinball::MoveCamera() {
-	int x, y;
-	ball->GetPosition(x, y);
-//	LOG("camera.y = %d", App->renderer->camera.y);
-	App->renderer->camera.y =-1*y +SCREEN_HEIGHT/2;
-	if (App->renderer->camera.y > 0) {
+	
+	if (state == START) {
 		App->renderer->camera.y = 0;
 	}
-}
+	if (state == PLAY) {
+		int x, y;
+		ball->GetPosition(x, y);
+		App->renderer->camera.y = -1 * y + SCREEN_HEIGHT / 2;
+		LOG("%d", App->renderer->camera.y);
+		if (App->renderer->camera.y > 0) {
+			App->renderer->camera.y = 0;
+		}
+		if (App->renderer->camera.y < -385) {
+			App->renderer->camera.y = -385;
+		}
+	}
+	//385
+	if (state == END) {
+
+	}
+	
+	}
 
 void ModuleScenePinball::Input() {
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)

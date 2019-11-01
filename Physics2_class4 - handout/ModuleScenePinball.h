@@ -7,6 +7,13 @@
 class PhysBody;
 class b2RevoluteJoint;
 class b2PrismaticJoint;
+enum scene_state
+{
+	START,
+	PLAY,
+	END,
+};
+
 class punctuation
 {
 public:
@@ -51,6 +58,7 @@ public:
 	void Restart();
 
 private:
+	scene_state state;
 	punctuation currentpts;
 
 	PhysBody* ball;
@@ -128,7 +136,7 @@ private:
 	float Ball_rotation = 0;
 
 	//Constant for blit puntuation_bar
-	int puntuation_bar_max;
+	
 	//Puntuation variables
 	int font_puntuation = -1;
 	char text[10];
@@ -150,6 +158,7 @@ private:
 	int puntuation_x;
 	bool end;
 	float KickerjointMotor;
+	
 
 	//Animations
 	SDL_Texture* fuel;
