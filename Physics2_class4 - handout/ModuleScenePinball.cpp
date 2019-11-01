@@ -162,6 +162,7 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 	number_2500.y = 35;
 	number_2500.w = 34;
 	number_2500.h = 34;
+
 	int width = 342, x = 0;
 	for (int i = 0; i < 9; i++) {
 		ignitionRect[i].x = x+width*i;
@@ -169,7 +170,17 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 		ignitionRect[i].h = 80;
 		ignitionRect[i].w = 342;
 	}
-	
+
+	blue_button.x = 0;
+	blue_button.y = 0;
+	blue_button.w = 32;
+	blue_button.h = 32;
+
+	red_square.x = 0;
+	red_square.y = 0;
+	red_square.w = 46;
+	red_square.h = 46;
+
 }
 
 ModuleScenePinball::~ModuleScenePinball()
@@ -204,257 +215,14 @@ bool ModuleScenePinball::Start()
 	multiplier_button = App->textures->Load("pinball/multiplier_letters.png");
 	numbers_buttons = App->textures->Load("pinball/numbers_buttons.png");
 	ignition = App->textures->Load("pinball/ignition.png");
+	Blue_button = App->textures->Load("pinball/blue_button.png");
+	Red_square = App->textures->Load("pinball/red_bar.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 
-	int pinball_board[94] = {
-	194, 341,
-	228, 288,
-	389, 128,
-	456, 85,
-	532, 67,
-	591, 69,
-	685, 98,
-	740, 137,
-	787, 183,
-	825, 241,
-	843, 304,
-	849, 359,
-	850, 1101,
-	810, 1101,
-	806, 388,
-	803, 348,
-	792, 298,
-	770, 232,
-	738, 198,
-	708, 170,
-	689, 172,
-	688, 220,
-	706, 230,
-	737, 234,
-	790, 466,
-	801, 474,
-	800, 569,
-	732, 698,
-	732, 767,
-	800, 834,
-	801, 1011,
-	789, 1034,
-	589, 1127,
-	590, 1230,
-	370, 1225,
-	369, 1130,
-	197, 1050,
-	178, 1034,
-	179, 835,
-	222, 792,
-	181, 747,
-	194, 735,
-	198, 559,
-	189, 542,
-	189, 523,
-	179, 505,
-	183, 383
-	};
-	int Flipper_L[16] = {
-	9, 34,
-	88, 65,
-	99, 68,
-	106, 66,
-	108, 58,
-	100, 50,
-	20, 7,
-	9, 15
-	};
-	int Flipper_R[16] = {
-	1, 61,
-	1, 53,
-	6, 47,
-	86, 5,
-	99, 12,
-	99, 29,
-	14, 64,
-	6, 64
-	};
-	int MappartL[24] = {
-	17, 39,
-	14, 44,
-	17, 50,
-	15, 160,
-	21, 170,
-	138, 221,
-	148, 210,
-	155, 207,
-	27, 161,
-	22, 148,
-	22, 48,
-	25, 42
-	};
-	int MappartR[22] = {
-	181, 40,
-	177, 47,
-	178, 52,
-	178, 160,
-	28, 211,
-	38, 215,
-	40, 227,
-	175, 170,
-	185, 161,
-	184, 51,
-	187, 47
-	};
-	int slingshotL[16] = {
-	74, 10,
-	71, 15,
-	69, 123,
-	71, 128,
-	122, 149,
-	132, 146,
-	135, 140,
-	78, 14
-	};
-	int slingshotR[16] = {
-	127, 14,
-	117, 24,
-	67, 142,
-	69, 150,
-	82, 151,
-	129, 135,
-	134, 126,
-	133, 20
-	};
-	int MapTunnel[52] = {
-	144, 388,
-	78, 250,
-	81, 222,
-	98, 184,
-	112, 161,
-	256, 19,
-	273, 16,
-	281, 21,
-	280, 67,
-	269, 76,
-	253, 73,
-	226, 63,
-	209, 73,
-	113, 170,
-	112, 186,
-	121, 205,
-	137, 236,
-	187, 336,
-	180, 340,
-	131, 241,
-	120, 232,
-	104, 232,
-	92, 242,
-	88, 258,
-	148, 378,
-	149, 385
-	};
-	int lane[24] = {
-	4, 18,
-	8, 9,
-	15, 6,
-	26, 6,
-	32, 10,
-	34, 17,
-	34, 53,
-	33, 61,
-	27, 65,
-	11, 65,
-	5, 61,
-	4, 52
-	};
-	int target1[16] = {
-	15, 14,
-	16, 26,
-	122, 81,
-	135, 80,
-	141, 67,
-	131, 56,
-	32, 7,
-	22, 7
-	};
-	int target2[16] = {
-	42, 107,
-	30, 114,
-	19, 109,
-	18, 98,
-	58, 19,
-	69, 13,
-	79, 18,
-	79, 29
-	};
 	
-	Map = App->physics->CreateChain(0, 0, pinball_board, 94);
-	App->physics->CreateChain(200, 816, MappartL, 24);
-	App->physics->CreateChain(580, 816, MappartR, 22);
-	App->physics->CreateChain(155, 150, MapTunnel, 52);
-	App->physics->CreateChain(473, 183, lane, 24);
-	App->physics->CreateChain(613, 183, lane, 24);
-	App->physics->CreateChain(542, 192, lane, 24);
-
-	//Ball
-	ball = App->physics->CreateCircle(810, 1070, 15, "ball", b2_dynamicBody, 0.4);
-	ball->xtransform = 810;
-	ball->ytransform = 1070;
-	//ball = App->physics->CreateCircle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 15, "ball", b2_staticBody, 0.4);
-	//map components
-	rotAxisL = App->physics->CreateCircle(358, 1040, 10,"rotAxisL", b2_staticBody);
-	rotAxisR = App->physics->CreateCircle(597, 1040, 10,"rotAxisR", b2_staticBody);
-	FlipperL = App->physics->CreatePolygon(358, 1040, Flipper_L, 16, "Flipper_L");
-	FlipperR = App->physics->CreatePolygon(510, 1023, Flipper_R, 16, "Flipper_L");
-	SlingshotL = App->physics->CreatePolygon(200, 820, slingshotL, 16,"SlingshotL", b2_staticBody);
-	SlingshotR = App->physics->CreatePolygon(580, 810, slingshotR, 16,"SlingshotR", b2_staticBody);
-	Bumper1 = App->physics->CreateCircle(433, 350, 50,"Bumper1", b2_staticBody);
-	Bumper2 = App->physics->CreateCircle(560, 450, 50,"Bumper2", b2_staticBody);
-	Target1 = App->physics->CreatePolygon(445, 495, target1, 16,"Target1", b2_staticBody);
-	Target2 = App->physics->CreatePolygon(675, 535, target2, 16,"Target2", b2_staticBody);
-
-	//Pistons
-	doorL = App->physics->CreateRectangle(200, 200, 10, 100, "doorL");
-	doorR = App->physics->CreateRectangle(900, 200, 10, 100, "doorR");
-	kickerBase = App->physics->CreateRectangle(830, 1100, 30, 15, "piston1", b2_staticBody);
-	kicker = App->physics->CreateRectangle(830, 1090, 30, 30, "piston2", b2_dynamicBody);
-	SSLPiston = App->physics->CreateRectangle(300, 920, 150, 5, "SSLPiston");
-	SSRPiston = App->physics->CreateRectangle(690, 920, 150, 5, "SSRPiston");
-	SSLPistonBase = App->physics->CreateRectangle(295, 920, 15, 15, "SSLPistonBase", b2_staticBody);
-	SSRPistonBase = App->physics->CreateRectangle(682, 920, 15, 15, "SSRPistonBase", b2_staticBody);
-
-	//Sensors
-	DoorSensor = App->physics->CreateRectangleSensor(760, 191, 5, 30, "Door_Sensor", 45);
-	DeathSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, 1155, SCREEN_WIDTH, 50, "DeathSensor");
-	
-	ignition1 = App->physics->CreateRectangleSensor(471, 534, 30, 5, "ignition1", 28);
-	ignition2 = App->physics->CreateRectangleSensor(507, 553, 30, 5, "ignition2", 28);
-	ignition3 = App->physics->CreateRectangleSensor(545, 571, 30, 5, "ignition3", 28);
-
-	sun = App->physics->CreateRectangleSensor(753, 620, 30, 100, "sun", 25);
-
-	Hole = App->physics->CreateRectangleSensor(268, 408, 37, 37, "Hole", 60);
-
-	F_sensor = App->physics->CreateRectangleSensor(218, 575, 37, 37, "F_sensor");
-	U_sensor = App->physics->CreateRectangleSensor(218, 622, 37, 37, "U_sensor");
-	E_sensor = App->physics->CreateRectangleSensor(218, 669, 37, 37, "E_sensor");
-	L_sensor = App->physics->CreateRectangleSensor(218, 716, 37, 37, "L_sensor");
-
-	sensor500 = App->physics->CreateRectangleSensor(306, 293, 50, 10, "sensor500", -45);
-	sensor502 = App->physics->CreateRectangleSensor(346, 253, 50, 10, "sensor502", -45);
-																 
-	W_sensor = App->physics->CreateRectangleSensor(459, 180, 37, 37, "W_sensor");
-	A_sensor = App->physics->CreateRectangleSensor(525, 198, 37, 37, "A_sensor");
-	R_sensor = App->physics->CreateRectangleSensor(595, 199, 37, 37, "R_sensor");
-	P_sensor = App->physics->CreateRectangleSensor(666, 185, 37, 37, "P_sensor");
-
-	L2_sensor = App->physics->CreateRectangleSensor(734, 265, 5, 30, "L2_sensor", -10);
-	I_sensor = App->physics->CreateRectangleSensor( 744, 308, 5, 30, "I_sensor" , -10);
-	G_sensor = App->physics->CreateRectangleSensor( 756, 351, 5, 30, "G_sensor" , -10);
-	H_sensor = App->physics->CreateRectangleSensor( 767, 394, 5, 30, "H_sensor" , -10);
-	T_sensor = App->physics->CreateRectangleSensor( 778, 437, 5, 30, "T_sensor" , -10);
-	
-	Passage_Sensor = App->physics->CreateRectangleSensor(362, 191, 5, 30, "Passage_Sensor", -45);
-
+	CreateBodies();
 	//joints
 	FlipperLJoint = App->physics->CreateRevoluteJoint(FlipperL->body, rotAxisL->body, 20, 24, 0, 40);
 	FlipperRJoint = App->physics->CreateRevoluteJoint(FlipperR->body, rotAxisR->body, 83, 19, -40, 0);
@@ -486,6 +254,8 @@ bool ModuleScenePinball::CleanUp()
 	App->textures->Unload(multiplier_button);
 	App->textures->Unload(numbers_buttons);
 	App->textures->Unload(ignition);
+	App->textures->Unload(Blue_button);
+
 	return true;
 }
 
@@ -814,9 +584,9 @@ void ModuleScenePinball::Light(bool &active) {
 	}
 }
 void ModuleScenePinball::FiveHpts(bool &active) {
+	if (FiveH1 && FiveH2)	FiveH1 = FiveH2 = false;
 	active = true;
 	if (FiveH1 && FiveH2) {
-		FiveH1 = FiveH2 = false;
 		currentpts += 25000;
 	}
 }
@@ -987,7 +757,19 @@ void ModuleScenePinball::getSensor(char* name) {
 	if (name == "Passage_Sensor") {
 		Passage();
 	}
-
+	if (name == "Blue_sensor") {
+		sensor_Blue = true;
+	}
+	if (name == "Blue_sensor_out") {
+		sensor_Blue = false;
+	}
+	if (name == "Blue_sensor_2") {
+		sensor_Blue2 = true;
+	}
+	if (name == "Blue_sensor_out_2") {
+		sensor_Blue2 = false;
+	}
+	
 }
 
 void ModuleScenePinball::blitbuttons()
@@ -1092,7 +874,20 @@ void ModuleScenePinball::blitbuttons()
 	}
 	if (passagecounter == 7) {
 		App->renderer->Blit(numbers_buttons, 314, 204, &number_2500);
+	}
 
+	if (sensor_Blue == true) {
+		App->renderer->Blit(Blue_button, 718, 879, &blue_button);
+	}
+	if (sensor_Blue2 == true) {
+		App->renderer->Blit(Blue_button, 230, 879, &blue_button);
+	}
+
+	if (FiveH1 == true) {
+		App->renderer->Blit(Red_square, 296, 286, &red_square);
+	}
+	if (FiveH2 == true) {
+		App->renderer->Blit(Red_square, 338, 245, &red_square);
 	}
 
 
@@ -1131,4 +926,259 @@ void ModuleScenePinball::ResetVar() {
 	currentpts.multipilier = 1;
 	collectFuel = false;
 	ignitionit = 0;
+}
+
+void ModuleScenePinball::CreateBodies() {
+	int pinball_board[94] = {
+	194, 341,
+	228, 288,
+	389, 128,
+	456, 85,
+	532, 67,
+	591, 69,
+	685, 98,
+	740, 137,
+	787, 183,
+	825, 241,
+	843, 304,
+	849, 359,
+	850, 1101,
+	810, 1101,
+	806, 388,
+	803, 348,
+	792, 298,
+	770, 232,
+	738, 198,
+	708, 170,
+	689, 172,
+	688, 220,
+	706, 230,
+	737, 234,
+	790, 466,
+	801, 474,
+	800, 569,
+	732, 698,
+	732, 767,
+	800, 834,
+	801, 1011,
+	789, 1034,
+	589, 1127,
+	590, 1230,
+	370, 1225,
+	369, 1130,
+	197, 1050,
+	178, 1034,
+	179, 835,
+	222, 792,
+	181, 747,
+	194, 735,
+	198, 559,
+	189, 542,
+	189, 523,
+	179, 505,
+	183, 383
+	};
+	int Flipper_L[16] = {
+	9, 34,
+	88, 65,
+	99, 68,
+	106, 66,
+	108, 58,
+	100, 50,
+	20, 7,
+	9, 15
+	};
+	int Flipper_R[16] = {
+	1, 61,
+	1, 53,
+	6, 47,
+	86, 5,
+	99, 12,
+	99, 29,
+	14, 64,
+	6, 64
+	};
+	int MappartL[24] = {
+	17, 39,
+	14, 44,
+	17, 50,
+	15, 160,
+	21, 170,
+	138, 221,
+	148, 210,
+	155, 207,
+	27, 161,
+	22, 148,
+	22, 48,
+	25, 42
+	};
+	int MappartR[22] = {
+	181, 40,
+	177, 47,
+	178, 52,
+	178, 160,
+	28, 211,
+	38, 215,
+	40, 227,
+	175, 170,
+	185, 161,
+	184, 51,
+	187, 47
+	};
+	int slingshotL[16] = {
+	74, 10,
+	71, 15,
+	69, 123,
+	71, 128,
+	122, 149,
+	132, 146,
+	135, 140,
+	78, 14
+	};
+	int slingshotR[16] = {
+	127, 14,
+	117, 24,
+	67, 142,
+	69, 150,
+	82, 151,
+	129, 135,
+	134, 126,
+	133, 20
+	};
+	int MapTunnel[52] = {
+	144, 388,
+	78, 250,
+	81, 222,
+	98, 184,
+	112, 161,
+	256, 19,
+	273, 16,
+	281, 21,
+	280, 67,
+	269, 76,
+	253, 73,
+	226, 63,
+	209, 73,
+	113, 170,
+	112, 186,
+	121, 205,
+	137, 236,
+	187, 336,
+	180, 340,
+	131, 241,
+	120, 232,
+	104, 232,
+	92, 242,
+	88, 258,
+	148, 378,
+	149, 385
+	};
+	int lane[24] = {
+	4, 18,
+	8, 9,
+	15, 6,
+	26, 6,
+	32, 10,
+	34, 17,
+	34, 53,
+	33, 61,
+	27, 65,
+	11, 65,
+	5, 61,
+	4, 52
+	};
+	int target1[16] = {
+	15, 14,
+	16, 26,
+	122, 81,
+	135, 80,
+	141, 67,
+	131, 56,
+	32, 7,
+	22, 7
+	};
+	int target2[16] = {
+	42, 107,
+	30, 114,
+	19, 109,
+	18, 98,
+	58, 19,
+	69, 13,
+	79, 18,
+	79, 29
+	};
+
+	Map = App->physics->CreateChain(0, 0, pinball_board, 94);
+	App->physics->CreateChain(200, 816, MappartL, 24);
+	App->physics->CreateChain(580, 816, MappartR, 22);
+	App->physics->CreateChain(155, 150, MapTunnel, 52);
+	App->physics->CreateChain(473, 183, lane, 24);
+	App->physics->CreateChain(613, 183, lane, 24);
+	App->physics->CreateChain(542, 192, lane, 24);
+
+	//Ball
+	ball = App->physics->CreateCircle(810, 1070, 15, "ball", b2_dynamicBody, 0.4);
+	ball->xtransform = 810;
+	ball->ytransform = 1070;
+	
+	
+	//map components
+	rotAxisL = App->physics->CreateCircle(358, 1040, 10, "rotAxisL", b2_staticBody);
+	rotAxisR = App->physics->CreateCircle(597, 1040, 10, "rotAxisR", b2_staticBody);
+	FlipperL = App->physics->CreatePolygon(358, 1040, Flipper_L, 16, "Flipper_L");
+	FlipperR = App->physics->CreatePolygon(510, 1023, Flipper_R, 16, "Flipper_L");
+	SlingshotL = App->physics->CreatePolygon(200, 820, slingshotL, 16, "SlingshotL", b2_staticBody);
+	SlingshotR = App->physics->CreatePolygon(580, 810, slingshotR, 16, "SlingshotR", b2_staticBody);
+	Bumper1 = App->physics->CreateCircle(433, 350, 50, "Bumper1", b2_staticBody);
+	Bumper2 = App->physics->CreateCircle(560, 450, 50, "Bumper2", b2_staticBody);
+	Target1 = App->physics->CreatePolygon(445, 495, target1, 16, "Target1", b2_staticBody);
+	Target2 = App->physics->CreatePolygon(675, 535, target2, 16, "Target2", b2_staticBody);
+	App->physics->CreateCircle(482, 1115, 6, "", b2_staticBody);
+	
+	//Pistons
+	doorL = App->physics->CreateRectangle(200, 200, 10, 100, "doorL");
+	doorR = App->physics->CreateRectangle(900, 200, 10, 100, "doorR");
+	kickerBase = App->physics->CreateRectangle(830, 1100, 30, 15, "piston1", b2_staticBody);
+	kicker = App->physics->CreateRectangle(830, 1090, 30, 30, "piston2", b2_dynamicBody);
+	SSLPiston = App->physics->CreateRectangle(300, 920, 150, 5, "SSLPiston");
+	SSRPiston = App->physics->CreateRectangle(690, 920, 150, 5, "SSRPiston");
+	SSLPistonBase = App->physics->CreateRectangle(295, 920, 15, 15, "SSLPistonBase", b2_staticBody);
+	SSRPistonBase = App->physics->CreateRectangle(682, 920, 15, 15, "SSRPistonBase", b2_staticBody);
+
+	//Sensors
+	DoorSensor = App->physics->CreateRectangleSensor(760, 191, 5, 30, "Door_Sensor", 45);
+	DeathSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, 1155, SCREEN_WIDTH, 50, "DeathSensor");
+
+	ignition1 = App->physics->CreateRectangleSensor(471, 534, 30, 5, "ignition1", 28);
+	ignition2 = App->physics->CreateRectangleSensor(507, 553, 30, 5, "ignition2", 28);
+	ignition3 = App->physics->CreateRectangleSensor(545, 571, 30, 5, "ignition3", 28);
+
+	sun = App->physics->CreateRectangleSensor(753, 620, 30, 100, "sun", 25);
+
+	Hole = App->physics->CreateRectangleSensor(268, 408, 37, 37, "Hole", 60);
+
+	F_sensor = App->physics->CreateRectangleSensor(218, 575, 37, 37, "F_sensor");
+	U_sensor = App->physics->CreateRectangleSensor(218, 622, 37, 37, "U_sensor");
+	E_sensor = App->physics->CreateRectangleSensor(218, 669, 37, 37, "E_sensor");
+	L_sensor = App->physics->CreateRectangleSensor(218, 716, 37, 37, "L_sensor");
+
+	sensor500 = App->physics->CreateRectangleSensor(306, 293, 50, 10, "sensor500", -45);
+	sensor502 = App->physics->CreateRectangleSensor(346, 253, 50, 10, "sensor502", -45);
+
+	W_sensor = App->physics->CreateRectangleSensor(459, 180, 37, 37, "W_sensor");
+	A_sensor = App->physics->CreateRectangleSensor(525, 198, 37, 37, "A_sensor");
+	R_sensor = App->physics->CreateRectangleSensor(595, 199, 37, 37, "R_sensor");
+	P_sensor = App->physics->CreateRectangleSensor(666, 185, 37, 37, "P_sensor");
+
+	L2_sensor = App->physics->CreateRectangleSensor(734, 265, 5, 30, "L2_sensor", -10);
+	I_sensor = App->physics->CreateRectangleSensor(744, 308, 5, 30, "I_sensor", -10);
+	G_sensor = App->physics->CreateRectangleSensor(756, 351, 5, 30, "G_sensor", -10);
+	H_sensor = App->physics->CreateRectangleSensor(767, 394, 5, 30, "H_sensor", -10);
+	T_sensor = App->physics->CreateRectangleSensor(778, 437, 5, 30, "T_sensor", -10);
+	Blue_sensor = App->physics->CreateRectangleSensor(735, 900, 30, 5, "Blue_sensor", 0);
+	Blue_sensor_out = App->physics->CreateRectangleSensor(700, 977, 30, 5, "Blue_sensor_out", 45);
+	Blue_sensor_2 = App->physics->CreateRectangleSensor(248, 900, 30, 5, "Blue_sensor_2", 0);
+	Blue_sensor_out_2 = App->physics->CreateRectangleSensor(300, 980, 30, 5, "Blue_sensor_out_2", -45);
+	Passage_Sensor = App->physics->CreateRectangleSensor(362, 191, 5, 30, "Passage_Sensor", -45);
+
 }

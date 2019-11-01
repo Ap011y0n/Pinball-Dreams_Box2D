@@ -56,7 +56,7 @@ public:
 	void blitbuttons();
 	void Death();
 	void ResetVar();
-	
+	void CreateBodies();
 
 private:
 	scene_state state;
@@ -127,6 +127,10 @@ private:
 	PhysBody* H_sensor;
 	PhysBody* T_sensor;
 	PhysBody* Passage_Sensor;
+	PhysBody* Blue_sensor;
+	PhysBody* Blue_sensor_out;
+	PhysBody* Blue_sensor_2;
+	PhysBody* Blue_sensor_out_2;
 
 	SDL_Texture* board;
 	SDL_Texture* flipper_Left;
@@ -145,6 +149,7 @@ private:
 	float Flipper_L_rotation = 0;
 	int Flipper_L_positon_x = 0;
 	int Flipper_L_positon_y = 0;
+
 
 	//Constant for blit puntuation_bar
 	
@@ -169,6 +174,9 @@ private:
 	int puntuation_x;
 	bool end;
 	float KickerjointMotor;
+
+	bool sensor_Blue;
+	bool sensor_Blue2;
 	bool collectFuel;
 	
 	//Animations
@@ -218,6 +226,11 @@ private:
 	SDL_Texture* ignition;
 	SDL_Rect ignitionRect[9];
 
+	SDL_Texture* Blue_button;
+	SDL_Rect blue_button;
+
+	SDL_Texture* Red_square;
+	SDL_Rect red_square;
 
 };
 
