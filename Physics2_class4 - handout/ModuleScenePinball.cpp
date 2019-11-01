@@ -77,6 +77,27 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 	Nsun_button.y = 0;
 	Nsun_button.w = 31;
 	Nsun_button.h = 31;
+
+	W_warp.x = 0;
+	W_warp.y = 0;
+	W_warp.w = 36;
+	W_warp.h = 36;
+
+	A_warp.x = 37;
+	A_warp.y = 0;
+	A_warp.w = 36;
+	A_warp.h = 36;
+
+	R_warp.x = 74;
+	R_warp.y = 0;
+	R_warp.w = 36;
+	R_warp.h = 36;
+
+	P_warp.x = 111;
+	P_warp.y = 0;
+	P_warp.w = 36;
+	P_warp.h = 36;
+	
 }
 
 ModuleScenePinball::~ModuleScenePinball()
@@ -110,6 +131,7 @@ bool ModuleScenePinball::Start()
 	lights = App->textures->Load("pinball/Light_letters.png");
 	ignition_button= App->textures->Load("pinball/red_button.png");
 	sun_button = App->textures->Load("pinball/sun_letters.png");
+	warp_button = App->textures->Load("pinball/Warp_letters.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -381,6 +403,7 @@ bool ModuleScenePinball::CleanUp()
 	App->textures->Unload(lights);
 	App->textures->Unload(ignition_button);
 	App->textures->Unload(sun_button);
+	App->textures->Unload(warp_button);
 	return true;
 }
 
@@ -780,7 +803,7 @@ void ModuleScenePinball::getSensor(char* name) {
 	if (name == "P_sensor") {
 		Warp(4);
 	}
-	if (name == "L2_sensor") {//
+	if (name == "L2_sensor") {
 		Light(L2active);
 	}
 	if (name == "I_sensor") {
@@ -852,6 +875,19 @@ void ModuleScenePinball::blitbuttons()
 		App->renderer->Blit(sun_button, 678, 554, &Nsun_button);
 	}
 	
+	if (Wactive == true || Wlight == true) {
+		App->renderer->Blit(warp_button, 441, 164, &W_warp);
+	}
+	if (Aactive == true || Alight == true) {
+		App->renderer->Blit(warp_button, 509, 184, &A_warp);
+	}
+	if (Ractive == true || Rlight == true) {
+		App->renderer->Blit(warp_button, 578, 183, &R_warp);
+	}
+	if (Pactive == true || Plight == true) {
+		App->renderer->Blit(warp_button, 648, 164, &P_warp);
+	}
+
 
 }
 
