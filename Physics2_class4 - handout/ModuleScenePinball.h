@@ -232,5 +232,9 @@ private:
 	SDL_Texture* Red_square;
 	SDL_Rect red_square;
 
+	SDL_Texture* Words;
+	SDL_Rect words[6];
+	int worditerator;
+
 };
 

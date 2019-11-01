@@ -163,14 +163,21 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 	number_2500.w = 34;
 	number_2500.h = 34;
 
-	int width = 342, x = 0;
+	int width = 342;
 	for (int i = 0; i < 9; i++) {
-		ignitionRect[i].x = x+width*i;
+		ignitionRect[i].x = width*i;
 		ignitionRect[i].y = 0;
 		ignitionRect[i].h = 80;
 		ignitionRect[i].w = 342;
 	}
 
+	int height = 46;
+	for (int i = 0; i < 6; i++) {
+		words[i].x = 0;
+		words[i].y = height*i;
+		words[i].h = 46;
+		words[i].w = 160;
+	}
 	blue_button.x = 0;
 	blue_button.y = 0;
 	blue_button.w = 32;
@@ -217,6 +224,8 @@ bool ModuleScenePinball::Start()
 	ignition = App->textures->Load("pinball/ignition.png");
 	Blue_button = App->textures->Load("pinball/blue_button.png");
 	Red_square = App->textures->Load("pinball/red_bar.png");
+	Words = App->textures->Load("pinball/word.png");
+
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -297,9 +306,11 @@ update_status ModuleScenePinball::Update()
 	App->renderer->Blit(flipper_Left, (Flipper_L_positon_x+5),(Flipper_L_positon_y+10), NULL, 1.0f, Flipper_L_rotation, -5, -5);
 	App->renderer->Blit(flipper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y +5), NULL, 1.0f, Flipper_R_rotation, -1,0);
 	blitbuttons(); //This function will make all the blits for the animations
+	App->renderer->Blit(ignition, 318, 663, &ignitionRect[ignitionit]); 
 	App->renderer->Blit(balltex, x, y, NULL, 1.0f, 0, 15, 15);
-	App->renderer->Blit(bar_points,142, -App->renderer->camera.y+1, NULL, 1.0f, 0, 0, 0);
-	App->renderer->Blit(ignition, 318, 663, &ignitionRect[ignitionit]);
+
+	App->renderer->Blit(bar_points,142, -App->renderer->camera.y, NULL);
+	App->renderer->Blit(Words, 191, -App->renderer->camera.y+9, &words[worditerator]);
 	
 	//Puntuation
 	int spacing;
@@ -340,7 +351,10 @@ update_status ModuleScenePinball::Update()
 	}
 	
 	App->fonts->BlitText(puntuation_x-1,4, font_puntuation,text);
-	App->fonts->BlitText(319, 4, font_puntuation, lives);
+
+	if(worditerator == 1)
+	App->fonts->BlitText(351, 4, font_puntuation, lives);
+
 	return UPDATE_CONTINUE;
 }
 
@@ -466,20 +480,28 @@ void ModuleScenePinball::Input() {
 			ball->transform = true;
 			balls = 3;
 			state = PLAY;
+			worditerator = 1;
 		}
 	}
 	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
 	{
-		CurrScore = true;
-		PrevScore = MaxScore = false;
+		worditerator = 1;
 	}
 	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
 	{
-		PrevScore = true;
-		CurrScore = MaxScore = false;
+		worditerator = 5;
+		CurrScore = true;
+		PrevScore = MaxScore = false;
 	}
 	if (App->input->GetKey(SDL_SCANCODE_4) == KEY_DOWN)
 	{
+		worditerator = 4;
+		PrevScore = true;
+		CurrScore = MaxScore = false;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_5) == KEY_DOWN)
+	{
+		worditerator = 3;
 		MaxScore = true;
 		CurrScore = PrevScore = false;
 	}
@@ -641,6 +663,7 @@ void ModuleScenePinball::Ignition(bool &active) {
 	if (Ignition1 && Ignition2 && Ignition3) {
 		Ignition1 = Ignition2 = Ignition3 = false;
 		if (ignitionit == 8) {
+			currentpts += 1000000;
 			ignitionit = 0;
 		}
 	}
@@ -895,6 +918,8 @@ void ModuleScenePinball::blitbuttons()
 
 void ModuleScenePinball::Death() {
 	ResetVar();
+	worditerator = 1;
+
 	if (balls >= 1) {
 		balls--;
 			if (balls > 0) {
@@ -902,6 +927,7 @@ void ModuleScenePinball::Death() {
 		}
 			else {
 				state = END;
+				worditerator = 2;
 				if (currentpts.value > highestpts.value) {
 					highestpts = currentpts;
 				}
@@ -926,58 +952,82 @@ void ModuleScenePinball::ResetVar() {
 	currentpts.multipilier = 1;
 	collectFuel = false;
 	ignitionit = 0;
+	worditerator = 0;
 }
 
 void ModuleScenePinball::CreateBodies() {
-	int pinball_board[94] = {
-	194, 341,
-	228, 288,
-	389, 128,
-	456, 85,
-	532, 67,
-	591, 69,
-	685, 98,
-	740, 137,
-	787, 183,
-	825, 241,
-	843, 304,
-	849, 359,
-	850, 1101,
-	810, 1101,
-	806, 388,
-	803, 348,
-	792, 298,
-	770, 232,
-	738, 198,
-	708, 170,
-	689, 172,
-	688, 220,
-	706, 230,
-	737, 234,
-	790, 466,
-	801, 474,
-	800, 569,
-	732, 698,
-	732, 767,
-	800, 834,
-	801, 1011,
-	789, 1034,
-	589, 1127,
-	590, 1230,
-	370, 1225,
-	369, 1130,
-	197, 1050,
-	178, 1034,
-	179, 835,
-	222, 792,
-	181, 747,
-	194, 735,
-	198, 559,
-	189, 542,
-	189, 523,
-	179, 505,
-	183, 383
+	int pinball_board[138] = {
+	585, 1318,
+	588, 1126,
+	783, 1040,
+	795, 1029,
+	800, 1017,
+	801, 1003,
+	801, 834,
+	732, 770,
+	730, 698,
+	777, 615,
+	800, 557,
+	801, 475,
+	789, 463,
+	792, 453,
+	783, 444,
+	735, 244,
+	738, 233,
+	732, 228,
+	728, 235,
+	720, 231,
+	721, 221,
+	710, 229,
+	692, 227,
+	687, 219,
+	686, 177,
+	692, 168,
+	709, 171,
+	744, 204,
+	765, 229,
+	790, 278,
+	798, 314,
+	802, 338,
+	804, 360,
+	806, 392,
+	807, 466,
+	807, 1214,
+	852, 1213,
+	849, 363,
+	840, 292,
+	825, 248,
+	798, 200,
+	758, 158,
+	734, 134,
+	711, 114,
+	641, 83,
+	580, 69,
+	518, 69,
+	464, 84,
+	415, 109,
+	372, 141,
+	254, 262,
+	204, 320,
+	187, 367,
+	178, 441,
+	178, 505,
+	187, 519,
+	187, 549,
+	194, 553,
+	195, 735,
+	180, 740,
+	180, 747,
+	220, 782,
+	218, 801,
+	178, 838,
+	178, 1035,
+	194, 1052,
+	366, 1126,
+	370, 1133,
+	369, 1325
 	};
+
 	int Flipper_L[16] = {
 	9, 34,
 	88, 65,
@@ -1108,7 +1158,7 @@ void ModuleScenePinball::CreateBodies() {
 	79, 29
 	};
 
-	Map = App->physics->CreateChain(0, 0, pinball_board, 94);
+	Map = App->physics->CreateChain(0, 0, pinball_board, 138);
 	App->physics->CreateChain(200, 816, MappartL, 24);
 	App->physics->CreateChain(580, 816, MappartR, 22);
 	App->physics->CreateChain(155, 150, MapTunnel, 52);
@@ -1118,7 +1168,7 @@ void ModuleScenePinball::CreateBodies() {
 
 	//Ball
 	ball = App->physics->CreateCircle(810, 1070, 15, "ball", b2_dynamicBody, 0.4);
-	ball->xtransform = 810;
+	ball->xtransform = 830;
 	ball->ytransform = 1070;
 	
 	
@@ -1138,8 +1188,8 @@ void ModuleScenePinball::CreateBodies() {
 	//Pistons
 	doorL = App->physics->CreateRectangle(200, 200, 10, 100, "doorL");
 	doorR = App->physics->CreateRectangle(900, 200, 10, 100, "doorR");
-	kickerBase = App->physics->CreateRectangle(830, 1100, 30, 15, "piston1", b2_staticBody);
-	kicker = App->physics->CreateRectangle(830, 1090, 30, 30, "piston2", b2_dynamicBody);
+	kickerBase = App->physics->CreateRectangle(830, 1115, 30, 15, "piston1", b2_staticBody);
+	kicker = App->physics->CreateRectangle(830, 1105, 30, 30, "piston2", b2_dynamicBody);
 	SSLPiston = App->physics->CreateRectangle(300, 920, 150, 5, "SSLPiston");
 	SSRPiston = App->physics->CreateRectangle(690, 920, 150, 5, "SSRPiston");
 	SSLPistonBase = App->physics->CreateRectangle(295, 920, 15, 15, "SSLPistonBase", b2_staticBody);
