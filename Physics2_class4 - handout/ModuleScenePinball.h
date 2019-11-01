@@ -55,6 +55,7 @@ public:
 	void Passage();
 	void blitbuttons();
 	void Death();
+	void ResetVar();
 	
 
 private:
@@ -67,6 +68,8 @@ private:
 
 	PhysBody* ball;
 
+	PhysBody* doorL;
+	PhysBody* doorR;
 	PhysBody* rotAxisL;
 	PhysBody* rotAxisR;
 	PhysBody* FlipperL;
@@ -77,6 +80,8 @@ private:
 	PhysBody* Bumper2;
 	PhysBody* Target1;
 	PhysBody* Target2;
+	PhysBody* Map;
+
 	// sensor PhysBody* Hole;
 
 	PhysBody* kickerBase;
@@ -90,6 +95,10 @@ private:
 	b2PrismaticJoint* KickerJoint;
 	b2PrismaticJoint* SSLJoint;
 	b2PrismaticJoint* SSRJoint;
+	b2PrismaticJoint* DoorLJoint;
+	b2PrismaticJoint* DoorRJoint;
+
+	PhysBody* DoorSensor;
 
 	PhysBody* DeathSensor;
 	PhysBody* ignition1;

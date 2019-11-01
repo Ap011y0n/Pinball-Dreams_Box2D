@@ -138,16 +138,7 @@ bool ModuleScenePinball::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
-	warp = Wlight = Alight = Rlight = Plight = Wactive = Aactive = Ractive = Pactive = false;
-	L2active = Iactive = Gactive = Hactive = Tactive = false; 
-	lightcounter = 1;
-	FiveH1 = FiveH2 = false;
-	Factive = Uactive = Eactive = Lactive = false;
-	Sun1 = Sun2 = Sun3 = Sun1Reward = Sun2Reward = Sun3Reward = false;
-	Suncounter = 1u;
-	Ignition1 = Ignition2 = Ignition3 = false;
-	ignitioncounter = 0u;
-	passagecounter = 0u;
+	ResetVar();
 	balls = 3;
 	end = false;
 	KickerjointMotor = 0;
@@ -352,7 +343,7 @@ bool ModuleScenePinball::Start()
 	79, 29
 	};
 	
-	App->physics->CreateChain(0, 0, pinball_board, 94);
+	Map = App->physics->CreateChain(0, 0, pinball_board, 94);
 	App->physics->CreateChain(200, 816, MappartL, 24);
 	App->physics->CreateChain(580, 816, MappartR, 22);
 	App->physics->CreateChain(155, 150, MapTunnel, 52);
@@ -378,6 +369,8 @@ bool ModuleScenePinball::Start()
 	Target2 = App->physics->CreatePolygon(675, 535, target2, 16,"Target2", b2_staticBody);
 
 	//Pistons
+	doorL = App->physics->CreateRectangle(200, 200, 10, 100, "doorL");
+	doorR = App->physics->CreateRectangle(900, 200, 10, 100, "doorR");
 	kickerBase = App->physics->CreateRectangle(830, 1100, 30, 15, "piston1", b2_staticBody);
 	kicker = App->physics->CreateRectangle(830, 1090, 30, 30, "piston2", b2_dynamicBody);
 	SSLPiston = App->physics->CreateRectangle(300, 920, 150, 5, "SSLPiston");
@@ -386,6 +379,7 @@ bool ModuleScenePinball::Start()
 	SSRPistonBase = App->physics->CreateRectangle(682, 920, 15, 15, "SSRPistonBase", b2_staticBody);
 
 	//Sensors
+	DoorSensor = App->physics->CreateRectangleSensor(760, 191, 5, 30, "Door_Sensor", 45);
 	DeathSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, 1155, SCREEN_WIDTH, 50, "DeathSensor");
 	
 	ignition1 = App->physics->CreateRectangleSensor(471, 534, 30, 5, "ignition1", 28);
@@ -421,7 +415,8 @@ bool ModuleScenePinball::Start()
 	KickerJoint = App->physics->CreatePrismaticJoint(kickerBase->body, kicker->body, 0, 0, 0, 100,1000);
 	SSLJoint = App->physics->CreatePrismaticJoint(SSLPistonBase->body, SSLPiston->body, 0, -10, 20, 30, 400, 66, 0.5 ,0.5);
 	SSRJoint = App->physics->CreatePrismaticJoint(SSRPistonBase->body, SSRPiston->body, 0, -10, 20, 30, 400, -66, -0.5, 0.5);
-
+	DoorLJoint = App->physics->CreatePrismaticJoint(Map->body, doorL->body, 365, 115, -20, 100, 4000, -40, -0.5, 0.5);
+	DoorRJoint = App->physics->CreatePrismaticJoint(Map->body, doorR->body, 760, 115, -20, 100, 4000, 35, 0.5, 0.5);
 	ball->listener = this;
 
 	return ret;
@@ -466,7 +461,8 @@ update_status ModuleScenePinball::Update()
 	if (KickerJoint->IsMotorEnabled())KickerJoint->EnableMotor(false);
 	if(SSRJoint->IsMotorEnabled())SSRJoint->EnableMotor(false);
 	if (SSLJoint->IsMotorEnabled())SSLJoint->EnableMotor(false);
-
+	if (DoorLJoint->IsMotorEnabled())DoorLJoint->EnableMotor(false);
+	if (DoorRJoint->IsMotorEnabled())DoorRJoint->EnableMotor(false);
 	Input();
 
 
@@ -827,6 +823,7 @@ void ModuleScenePinball::Ignition(bool &active) {
 	}
 }
 void ModuleScenePinball::Passage() {
+	DoorLJoint->EnableMotor(true);
 	if (passagecounter < 6) {
 		passagecounter++;
 	}
@@ -856,6 +853,9 @@ void ModuleScenePinball::Passage() {
 }
 //Receives the name of a sensor, then starts a determinate proces depending of it's name property
 void ModuleScenePinball::getSensor(char* name) {
+	if (name == "Door_Sensor") {
+		DoorRJoint->EnableMotor(true);
+	}
 	if (name == "DeathSensor") {
 		Death();
 	}
@@ -1005,7 +1005,7 @@ void ModuleScenePinball::blitbuttons()
 }
 
 void ModuleScenePinball::Death() {
-	
+	ResetVar();
 	if (balls >= 1) {
 		balls--;
 			if (balls > 0) {
@@ -1018,9 +1018,22 @@ void ModuleScenePinball::Death() {
 				}
 				previouspts = currentpts;
 				currentpts.value = 0;
-				currentpts.multipilier = 1;
+				
 				movecam = false;
 			}
 	}
 
+}
+void ModuleScenePinball::ResetVar() {
+	warp = Wlight = Alight = Rlight = Plight = Wactive = Aactive = Ractive = Pactive = false;
+	L2active = Iactive = Gactive = Hactive = Tactive = false;
+	lightcounter = 1;
+	FiveH1 = FiveH2 = false;
+	Factive = Uactive = Eactive = Lactive = false;
+	Sun1 = Sun2 = Sun3 = Sun1Reward = Sun2Reward = Sun3Reward = false;
+	Suncounter = 1u;
+	Ignition1 = Ignition2 = Ignition3 = false;
+	ignitioncounter = 0u;
+	passagecounter = 0u;
+	currentpts.multipilier = 1;
 }
