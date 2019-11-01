@@ -97,6 +97,36 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 	P_warp.y = 0;
 	P_warp.w = 36;
 	P_warp.h = 36;
+
+	W_warp.x = 0;
+	W_warp.y = 0;
+	W_warp.w = 36;
+	W_warp.h = 36;
+
+	multiplier_x2.x = 0;
+	multiplier_x2.y = 0;
+	multiplier_x2.w = 58;
+	multiplier_x2.h = 29;
+
+	multiplier_x3.x = 59;
+	multiplier_x3.y = 0;
+	multiplier_x3.w = 58;
+	multiplier_x3.h = 29;
+
+	multiplier_x4.x = 118;
+	multiplier_x4.y = 0;
+	multiplier_x4.w = 58;
+	multiplier_x4.h = 29;
+
+	multiplier_x6.x = 177;
+	multiplier_x6.y = 0;
+	multiplier_x6.w = 58;
+	multiplier_x6.h = 29;
+
+	multiplier_x8.x = 236;
+	multiplier_x8.y = 0;
+	multiplier_x8.w = 58;
+	multiplier_x8.h = 29;
 	
 }
 
@@ -132,6 +162,7 @@ bool ModuleScenePinball::Start()
 	ignition_button= App->textures->Load("pinball/red_button.png");
 	sun_button = App->textures->Load("pinball/sun_letters.png");
 	warp_button = App->textures->Load("pinball/Warp_letters.png");
+	multiplier_button = App->textures->Load("pinball/multiplier_letters.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -404,6 +435,7 @@ bool ModuleScenePinball::CleanUp()
 	App->textures->Unload(ignition_button);
 	App->textures->Unload(sun_button);
 	App->textures->Unload(warp_button);
+	App->textures->Unload(multiplier_button);
 	return true;
 }
 
@@ -888,6 +920,21 @@ void ModuleScenePinball::blitbuttons()
 		App->renderer->Blit(warp_button, 648, 164, &P_warp);
 	}
 
+	if (currentpts.multipilier == 2) {
+		App->renderer->Blit(multiplier_button, 414, 111, &multiplier_x2);
+	}
+	if (currentpts.multipilier == 3) {
+		App->renderer->Blit(multiplier_button, 465, 86, &multiplier_x3);
+	}
+	if (currentpts.multipilier == 4) {
+		App->renderer->Blit(multiplier_button, 529, 73, &multiplier_x4);
+	}
+	if (currentpts.multipilier == 6) {
+		App->renderer->Blit(multiplier_button, 594, 86, &multiplier_x6);
+	}
+	if (currentpts.multipilier == 8) {
+		App->renderer->Blit(multiplier_button, 645, 111, &multiplier_x8);
+	}
 
 }
 

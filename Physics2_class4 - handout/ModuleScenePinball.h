@@ -178,5 +178,13 @@ private:
 	SDL_Rect Ssun_button;
 	SDL_Rect Usun_button;
 	SDL_Rect Nsun_button;
+
+	SDL_Texture* multiplier_button;
+	SDL_Rect multiplier_x2;
+	SDL_Rect multiplier_x3;
+	SDL_Rect multiplier_x4;
+	SDL_Rect multiplier_x6;
+	SDL_Rect multiplier_x8;
+
 };
 
