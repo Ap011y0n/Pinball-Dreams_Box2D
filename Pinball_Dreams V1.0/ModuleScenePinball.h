@@ -59,6 +59,8 @@ public:
 	void Death();
 	void ResetVar();
 	void CreateBodies();
+	void Blit();
+	void BlitUI();
 
 
 private:
@@ -162,7 +164,7 @@ private:
 	
 	//Puntuation variables
 	int font_puntuation = -1;
-	char text[10];
+	char points[10];
 	char lives[10];
 	uint balls;
 

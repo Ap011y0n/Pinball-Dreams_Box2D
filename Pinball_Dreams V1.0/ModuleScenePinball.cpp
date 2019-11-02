@@ -13,6 +13,7 @@
 
 ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
+	// We define al the rects so we can blit them later on
 	F_fuel.x = 0;
 	F_fuel.y = 0;
 	F_fuel.w = 36;
@@ -209,8 +210,11 @@ ModuleScenePinball::~ModuleScenePinball()
 bool ModuleScenePinball::Start()
 {
 	LOG("Loading Intro assets");
+
 	bool ret = true;
+	//We reset most variables value with this function, here we use it to initializa them
 	ResetVar();
+
 	balls = 3;
 	end = false;
 	KickerjointMotor = 0;
@@ -296,17 +300,11 @@ bool ModuleScenePinball::CleanUp()
 // Update: draw background
 update_status ModuleScenePinball::Update()
 {
-	
-	Flipper_L_rotation = FlipperL->GetRotation();
-	FlipperL->GetPosition(Flipper_L_positon_x, Flipper_L_positon_y);
 
-	Flipper_R_rotation = FlipperR->GetRotation();
-	FlipperR->GetPosition(Flipper_R_positon_x, Flipper_R_positon_y);
+	p2SString title("Pinball_Dreams Box2D");
+	App->window->SetTitle(title.GetString());
 
-
-	int x, y;
-	ball->GetPosition(x, y);
-
+	//Joints motors behaviours
 	FlipperLJoint->SetMotorSpeed(-1000 * DEGTORAD);
 	FlipperRJoint->SetMotorSpeed(1000 * DEGTORAD);
 	if (trap)trapJoint->SetMotorSpeed(1000 * DEGTORAD);
@@ -317,38 +315,51 @@ update_status ModuleScenePinball::Update()
 	if (SSLJoint->IsMotorEnabled())SSLJoint->EnableMotor(false);
 	if (DoorLJoint->IsMotorEnabled())DoorLJoint->EnableMotor(false);
 	if (DoorRJoint->IsMotorEnabled())DoorRJoint->EnableMotor(false);
+
 	Input();
-
-
-	p2SString title("Pinball_Dreams Box2D");
-	App->window->SetTitle(title.GetString());
 	MoveCamera();
+	Blit();
+	BlitUI();
 
+	return UPDATE_CONTINUE;
+}
+
+void ModuleScenePinball::Blit() {
+	//Get coord to blit the images
+	Flipper_L_rotation = FlipperL->GetRotation();
+	FlipperL->GetPosition(Flipper_L_positon_x, Flipper_L_positon_y);
+
+	Flipper_R_rotation = FlipperR->GetRotation();
+	FlipperR->GetPosition(Flipper_R_positon_x, Flipper_R_positon_y);
+
+	int x, y;
+	ball->GetPosition(x, y);
 
 	//All renders
 	App->renderer->Blit(board, 0, 0, NULL);
 	App->renderer->Blit(Kicker, 817, Kickerposy, &kickerRect);
 
-	//817
-	//1107
-	App->renderer->Blit(flipper_Left, (Flipper_L_positon_x+5),(Flipper_L_positon_y+10), NULL, 1.0f, Flipper_L_rotation, -5, -5);
-	App->renderer->Blit(flipper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y +5), NULL, 1.0f, Flipper_R_rotation, -1,0);
+	App->renderer->Blit(flipper_Left, (Flipper_L_positon_x + 5), (Flipper_L_positon_y + 10), NULL, 1.0f, Flipper_L_rotation, -5, -5);
+	App->renderer->Blit(flipper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y + 5), NULL, 1.0f, Flipper_R_rotation, -1, 0);
+
 	blitbuttons(); //This function will make all the blits for the animations
-	App->renderer->Blit(ignition, 318, 663, &ignitionRect[ignitionit]); 
+
+	App->renderer->Blit(ignition, 318, 663, &ignitionRect[ignitionit]);
 	App->renderer->Blit(balltex, x, y, NULL, 1.0f, 0, 15, 15);
 
-	App->renderer->Blit(bar_points,142, -App->renderer->camera.y, NULL);
-	App->renderer->Blit(Words, 191, -App->renderer->camera.y+9, &words[worditerator]);
+	App->renderer->Blit(bar_points, 142, -App->renderer->camera.y, NULL);
+	App->renderer->Blit(Words, 191, -App->renderer->camera.y + 9, &words[worditerator]);
 	
-	//Puntuation
+}
+
+//This function is mainly used to blit the ui elements, we use module fonts to blit two words, 
+//the number of balls remaining, and the score, which is capped to 100000000
+void ModuleScenePinball::BlitUI() {
 	int spacing;
 	if (CurrScore) spacing = currentpts.value;
 	if (PrevScore) spacing = previouspts.value;
 	if (MaxScore) spacing = highestpts.value;
 
-	sprintf_s(text, 10, "%d", spacing);
-	sprintf_s(lives, 10, "%d", balls);
-	
 	if (spacing < 9) {
 		puntuation_x = 800;
 	}
@@ -377,38 +388,43 @@ update_status ModuleScenePinball::Update()
 		puntuation_x = 544;
 		spacing = 100000000;
 	}
-	
-	App->fonts->BlitText(puntuation_x-1,4, font_puntuation,text);
 
-	if(worditerator == 1)
-	App->fonts->BlitText(351, 4, font_puntuation, lives);
+	sprintf_s(points, 10, "%d", spacing);
+	sprintf_s(lives, 10, "%d", balls);
 
-	return UPDATE_CONTINUE;
+	App->fonts->BlitText(puntuation_x - 1, 4, font_puntuation, points);
+
+	if (worditerator == 1)
+		App->fonts->BlitText(351, 4, font_puntuation, lives);
 }
+
 
 void ModuleScenePinball::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	int x, y;
+//Since we only enabled the ball to be the listener, we'll use body b for collision detection
 
-	//App->audio->PlayFx(bonus_fx);
-
-
-	if (bodyA)
+/*	if (bodyA)
 	{
 		for (b2Fixture* f = bodyA->body->GetFixtureList(); f; f = f->GetNext()) {
 			if (f->IsSensor()) {
-				//LOG("Sensor A");
 			}
 		}
-		bodyA->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
 	}
-
+*/
+	//When an object collides, we get its name, and then decide what to do with this ionformation
 	if (bodyB)
 	{
-		if (bodyB->name == "SSRPiston") { SSRJoint->EnableMotor(true); App->audio->PlayFx(4, 0);}
-		if (bodyB->name == "SSLPiston") { SSLJoint->EnableMotor(true); App->audio->PlayFx(4, 0);}
+		if (bodyB->name == "SSRPiston") 
+		{ 
+			SSRJoint->EnableMotor(true); App->audio->PlayFx(4, 0);
+		}
+		if (bodyB->name == "SSLPiston") 
+		{
+			SSLJoint->EnableMotor(true); App->audio->PlayFx(4, 0);
+		}
 		if (bodyB->name == "Bumper1" || bodyB->name == "Bumper2") {
+
 			App->audio->PlayFx(1, 0);
 			int x1 = 0, x2 = 0;
 			b2Vec2 vect(x1, x2);
@@ -416,21 +432,22 @@ void ModuleScenePinball::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			ball->body->ApplyLinearImpulse(b2Vec2(2, 2), vect, true);
 			currentpts += 500;
 		}
+
+		if (bodyB->name == "Flipper_R" || bodyB->name == "Flipper_L") {
+			App->audio->PlayFx(2, 0);
+		}
+
+	//In case it's a sensor, we call the function that manages this type of objects
 		for (b2Fixture* f = bodyB->body->GetFixtureList(); f; f = f->GetNext()) {
 			if (f->IsSensor()) {
 				getSensor(bodyB->name);
 			}
 		}
-		bodyB->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
-		if (bodyB->name == "Flipper_R"|| bodyB->name == "Flipper_L") {
-			App->audio->PlayFx(2, 0);
-		}
 	}
 }
 
 void ModuleScenePinball::MoveCamera() {
-	
+	//Depending of the state of the game, camera behaves differently, if the player is actually playing the game, it will follow the ball
 	if (state == START) {
 		if (movecam) {
 			App->renderer->camera.y--;
@@ -475,7 +492,10 @@ void ModuleScenePinball::MoveCamera() {
 	}
 
 void ModuleScenePinball::Input() {
+	//Input in the middle of a match
 	if(state == PLAY){
+	//Left flipper
+		//Changes it's joint motor value
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
 		FlipperLJoint->SetMotorSpeed(1000 * DEGTORAD);
@@ -483,13 +503,15 @@ void ModuleScenePinball::Input() {
 		Flipper_L_rotation = FlipperL->GetRotation();
 
 	}
-	
+	//Right flipper
+		//Changes it's joint motor value
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
 		FlipperRJoint->SetMotorSpeed(-1000 * DEGTORAD);
 		FlipperR->GetPosition(Flipper_R_positon_x, Flipper_R_positon_y);
 		Flipper_R_rotation = FlipperR->GetRotation();
 	}
+	//Kicker behaviour, charge while pressing down button, and launches the ball when releasing
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
 	{
 	
@@ -509,7 +531,9 @@ void ModuleScenePinball::Input() {
 		Kickerposy = 1107;
 
 	}
-	}
+}
+	//Input while not playing a match
+	//Press 1 to start playing
 	if (state != PLAY) {
 		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 		{
@@ -519,6 +543,8 @@ void ModuleScenePinball::Input() {
 			worditerator = 1;
 		}
 	}
+//Input availaable in all phasesç
+	//Iterate between current ball, current score, previoous score and highscore
 	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
 	{
 		worditerator = 1;
@@ -616,7 +642,9 @@ void ModuleScenePinball::Warp(uint index) {
 	}
 
 }
+
 //receives a light bool, and activates it
+//If all of them are active a reward is now obtainable in passage and ball trap
 void ModuleScenePinball::Light(bool &active) {
 	if (L2active && Iactive && Gactive && Hactive && Tactive) {
 		L2active = Iactive = Gactive = Hactive = Tactive = false;
@@ -641,6 +669,8 @@ void ModuleScenePinball::Light(bool &active) {
 		}
 	}
 }
+
+//Two buttons that if are active, reward the player with some points
 void ModuleScenePinball::FiveHpts(bool &active) {
 	if (FiveH1 && FiveH2)	FiveH1 = FiveH2 = false;
 	active = true;
@@ -648,6 +678,8 @@ void ModuleScenePinball::FiveHpts(bool &active) {
 		currentpts += 25000;
 	}
 }
+
+//if we go throug this section two times, a bool will activate, rewarding the player with some points
 void ModuleScenePinball::SunRun() {
 	currentpts += 10000;
 	switch (Suncounter) {
@@ -688,6 +720,8 @@ void ModuleScenePinball::SunRun() {
 
 	
 }
+
+//If we activate all the leters, a bool activates, that allows the player to collect fuel in the left passage
 void ModuleScenePinball::Fuel(bool &active) {
 	active = true;
 	if (Factive && Uactive && Eactive && Lactive) {
@@ -695,6 +729,9 @@ void ModuleScenePinball::Fuel(bool &active) {
 	}
 }
 
+//If all ignition buttons are active, an int is increased. 
+//This will determine how many letters of ignition will be lightened. 
+//If all are lightened, the player will be awarded wit a lot of points
 void ModuleScenePinball::Ignition(bool &active) {
 	if (Ignition1 && Ignition2 && Ignition3) {
 		Ignition1 = Ignition2 = Ignition3 = false;
@@ -708,6 +745,9 @@ void ModuleScenePinball::Ignition(bool &active) {
 		if (ignitionit < 8) { ignitionit++; }
 	}
 }
+
+//Everytime the playes goes through it, the points he receives are increased
+//Also used to receive other rewards that are activated in other sensors
 void ModuleScenePinball::Passage() {
 	DoorLJoint->EnableMotor(true);
 	if (collectFuel) {
@@ -753,6 +793,9 @@ void ModuleScenePinball::Passage() {
 		break;
 	}
 }
+
+//The balltrap will trap the ball some seconds and reward the player with more points each time he enters this sensor
+//Can also be used to obtain an extra ball if all LIGHT sensors are active
 void ModuleScenePinball::balltrap() {
 	trap = true;
 	traptimer = SDL_GetTicks();
@@ -881,6 +924,7 @@ void ModuleScenePinball::getSensor(char* name) {
 	
 }
 
+//Used to blit the buttons, depending on the variables that are activated in the previous functions
 void ModuleScenePinball::blitbuttons()
 {
 	if (Factive == true) {
@@ -1002,6 +1046,7 @@ void ModuleScenePinball::blitbuttons()
 	if (fivemil) App->renderer->Blit(arrows, 244, 518, &arrowrect[1]);
 	if (tenmil) App->renderer->Blit(arrows, 268, 566, &arrowrect[2]);
 	if (collectFuel) App->renderer->Blit(arrows, 291, 612, &arrowrect[3]);
+	//Not implemented
 	//App->renderer->Blit(arrows, 311, 499, &arrowrect[2]);
 	//App->renderer->Blit(arrows, 337, 549, &arrowrect[3]);
 	if (extraball)App->renderer->Blit(arrows, 363, 597, &arrowrect[1]);
@@ -1010,6 +1055,7 @@ void ModuleScenePinball::blitbuttons()
 	if (Sun3Reward) App->renderer->Blit(arrows, 711, 638, &arrowrect[4]);
 }
 
+//Death interactiopn, activates everytime the ball falls on the void
 void ModuleScenePinball::Death() {
 	ResetVar();
 	worditerator = 1;
@@ -1033,6 +1079,8 @@ void ModuleScenePinball::Death() {
 	}
 
 }
+
+//Reset most variables, used everytime the ball falls
 void ModuleScenePinball::ResetVar() {
 	warp = Wlight = Alight = Rlight = Plight = Wactive = Aactive = Ractive = Pactive = false;
 	L2active = Iactive = Gactive = Hactive = Tactive = false;
@@ -1052,6 +1100,7 @@ void ModuleScenePinball::ResetVar() {
 	
 }
 
+//Create all phys bodies
 void ModuleScenePinball::CreateBodies() {
 	int pinball_board[138] = {
 	585, 1318,
@@ -1124,7 +1173,6 @@ void ModuleScenePinball::CreateBodies() {
 	370, 1133,
 	369, 1325
 	};
-
 	int Flipper_L[16] = {
 	9, 34,
 	88, 65,
@@ -1132,16 +1180,17 @@ void ModuleScenePinball::CreateBodies() {
 	106, 66,
 	108, 58,
 	100, 50,
-	20, 7,
+	21, 11,
 	9, 15
 	};
+
 	int Flipper_R[16] = {
 	1, 61,
 	1, 53,
 	6, 47,
-	86, 5,
-	99, 12,
-	99, 29,
+	78, 11,
+	92, 9,
+	97, 28,
 	14, 64,
 	6, 64
 	};
@@ -1295,7 +1344,7 @@ void ModuleScenePinball::CreateBodies() {
 
 	//Sensors
 	DoorSensor = App->physics->CreateRectangleSensor(760, 191, 5, 30, "Door_Sensor", 45);
-	DeathSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, 1155, SCREEN_WIDTH, 50, "DeathSensor");
+	DeathSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, 1300, SCREEN_WIDTH, 50, "DeathSensor");
 
 	ignition1 = App->physics->CreateRectangleSensor(471, 534, 30, 5, "ignition1", 28);
 	ignition2 = App->physics->CreateRectangleSensor(507, 553, 30, 5, "ignition2", 28);

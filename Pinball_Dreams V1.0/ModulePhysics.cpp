@@ -35,15 +35,9 @@ bool ModulePhysics::Start()
 	b2BodyDef bd;
 	ground = world->CreateBody(&bd);
 
-	// big static circle as "ground" in the middle of the screen
-	//Creaciond de la pala//CreatePolygon(big_ball);
-	
-
-
 	return true;
 }
 
-// 
 update_status ModulePhysics::PreUpdate()
 {
 	world->Step(1.0f / 60.0f, 6, 2);
@@ -62,6 +56,7 @@ update_status ModulePhysics::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
+//Create circles ---------------------------------------------------------------------------
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, char* name, b2BodyType type, float restitution)
 {
 	b2BodyDef body;
@@ -88,6 +83,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, char* name, b2Bo
 	return pbody;
 }
 
+//Create Rectangles ---------------------------------------------------------------------------
 PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, char* name, b2BodyType type)
 {
 	b2BodyDef body;
@@ -113,6 +109,7 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, ch
 	return pbody;
 }
 
+//Create Rectangles that are sensors ---------------------------------------------------------------------------
 PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height, char* name, int angle, b2BodyType type)
 {
 	b2BodyDef body;
@@ -143,6 +140,7 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 	return pbody;
 }
 
+//Create chains ---------------------------------------------------------------------------
 PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, char* name, b2BodyType type)
 {
 	b2BodyDef body;
@@ -212,7 +210,7 @@ PhysBody*  ModulePhysics::CreatePolygon(int x, int y, int* points, int size, cha
 	return pbody;
 }
 
-//methode to create revolute joints
+//method to create revolute joints ---------------------------------------------------------------------------
 b2RevoluteJoint*  ModulePhysics::CreateRevoluteJoint(b2Body* bodyA, b2Body* bodyB, int AnchorX, int AnchorY, int lowerAngle, int upperAngle) {
 	b2RevoluteJointDef revoluteJointDef;
 	
@@ -234,7 +232,7 @@ b2RevoluteJoint*  ModulePhysics::CreateRevoluteJoint(b2Body* bodyA, b2Body* body
 return revolutejoint;
 }
 
-//methode to create prismatic joints
+//method to create prismatic joints ---------------------------------------------------------------------------
 b2PrismaticJoint* ModulePhysics::CreatePrismaticJoint(b2Body* bodyA, b2Body* bodyB, int AnchorX, int AnchorY, int lowerTranslation, int upperTranslation, int maxforce, int referenceAngle, float directionx, float directiony) {
 	b2PrismaticJointDef prismaticJointDef;
 
@@ -277,10 +275,7 @@ update_status ModulePhysics::PostUpdate()
 	if(!debug)
 		return UPDATE_CONTINUE;
 
-	// Bonus code: this will iterate all objects in the world and draw the circles
-	// You need to provide your own macro to translate meters to pixels
-	
-	
+	// This will iterate all objects in the world and draw the circles
 
 	for(b2Body* b = world->GetBodyList(); b; b = b->GetNext())
 	{
@@ -353,8 +348,8 @@ update_status ModulePhysics::PostUpdate()
 				break;
 			}
 
-			// TODO 1: If mouse button 1 is pressed ...
-			// App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN
+			// If mouse button 1 is pressed ...
+		
 			if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN) {
 
 				PhysBody* phys = (PhysBody*)b->GetUserData();
@@ -370,7 +365,7 @@ update_status ModulePhysics::PostUpdate()
 
 	// If a body was selected we will attach a mouse joint to it
 	// so we can pull it around
-	// TODO 2: If a body was selected, create a mouse joint
+	//If a body was selected, create a mouse joint
 	// using mouse_joint class property
 	
 	if(selected == true){
@@ -391,7 +386,7 @@ update_status ModulePhysics::PostUpdate()
 		mouse_joint->SetTarget(mouse_position);
 		App->renderer->DrawLine(App->input->GetMouseX(), App->input->GetMouseY(), METERS_TO_PIXELS(mouse_joint->GetAnchorB().x), METERS_TO_PIXELS(mouse_joint->GetAnchorB().y),225,0,0);
 	}
-	// TODO 3: If the player keeps pressing the mouse button, update
+	//If the player keeps pressing the mouse button, update
 	// target position and draw a red line between both anchor points
 	
 	if(App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_UP){
@@ -403,7 +398,7 @@ update_status ModulePhysics::PostUpdate()
 		
 	 }
 	}
-	// TODO 4: If the player releases the mouse button, destroy the joint
+	//If the player releases the mouse button, destroy the joint
 
 	return UPDATE_CONTINUE;
 }
@@ -466,8 +461,6 @@ int PhysBody::RayCast(int x1, int y1, int x2, int y2, float& normal_x, float& no
 	{
 		if(fixture->GetShape()->RayCast(&output, input, body->GetTransform(), 0) == true)
 		{
-			// do we want the normal ?
-
 			float fx = x2 - x1;
 			float fy = y2 - y1;
 			float dist = sqrtf((fx*fx) + (fy*fy));
@@ -485,6 +478,8 @@ int PhysBody::RayCast(int x1, int y1, int x2, int y2, float& normal_x, float& no
 
 void ModulePhysics::BeginContact(b2Contact* contact)
 {
+	//Gets a contact, then we get the data of the pysbody that is colliding, 
+	//and calling all modules that are listeners to actiavte their Oncollision methods
 	PhysBody* physA = (PhysBody*)contact->GetFixtureA()->GetBody()->GetUserData();
 	PhysBody* physB = (PhysBody*)contact->GetFixtureB()->GetBody()->GetUserData();
 

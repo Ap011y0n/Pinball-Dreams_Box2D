@@ -36,7 +36,7 @@ public:
 };
 
 // Module --------------------------------------
-class ModulePhysics : public Module, public b2ContactListener // TODO
+class ModulePhysics : public Module, public b2ContactListener //Module physics now inherits from b2ContactListener
 {
 public:
 	ModulePhysics(Application* app, bool start_enabled = true);
@@ -56,9 +56,9 @@ public:
 	b2PrismaticJoint* CreatePrismaticJoint(b2Body* bodyA, b2Body* bodyB, int AnchorX, int AnchorY, int lowerTranslation, int upperTranslation, int maxforce, int referenceAngle = 0, float directionx = 0, float directiony = 1);
 
 
-	// b2ContactListener ---
+
 	void BeginContact(b2Contact* contact);
-	/*	b2RevoluteJointDef revoluteJointDef;*/
+	
 	b2RevoluteJoint* revolutejoint;
 	b2PrismaticJoint* prismaticjoint;
 private:
