@@ -32,16 +32,16 @@ https://github.com/polf780
 
 ### Gameplay mechanics:
 
-* "WARP" ROLL OVERS      
+* "WARP" ROLL OVERS               
 Light all letters to  collect 2, 3, 4, 6 + 8 times bonus multiplier. To light a letter permanently, you must go through it 2 times without lightening any other letter.
 
-* "LIGHT" TARGETS
+* "LIGHT" TARGETS                     
 Light  all letters to enable  EXTRA BALL, 5 and 10 MILLION points  in turn.
 
-* TOP-LEFT PASSAGE
+* TOP-LEFT PASSAGE                 
 Collect and raise the current RAMP VALUE. Also awards  PLANET WARP, 5 and 10 MILLION  points when enabled.
 
-* RIGHT PASSAGE
+* RIGHT PASSAGE                 
 Scores  one BOOST  (10,000 points) and  lights the next SUN letter. Repeat this to score DOUBLE BOOST (20,000 points) and TRIPLE BOOST(30,000 points).
 
 * BALL TRAP             
