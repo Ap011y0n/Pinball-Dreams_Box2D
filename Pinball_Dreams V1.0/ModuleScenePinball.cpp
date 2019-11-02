@@ -225,35 +225,35 @@ bool ModuleScenePinball::Start()
 	PrevScore = MaxScore = false;
 	Kickerposy = 1107;
 
-	board = App->textures->Load("pinball/pinball_board.png");
-	flipper_Left = App->textures->Load("pinball/fliper_Left.png");
-	flipper_Right = App->textures->Load("pinball/fliper_Right.png");
-	balltex = App->textures->Load("pinball/ball.png");
-	bar_points= App->textures->Load("pinball/bar_points.png");
-	fuel= App->textures->Load("pinball/Fuel_letters.png");
-	lights = App->textures->Load("pinball/Light_letters.png");
-	ignition_button= App->textures->Load("pinball/red_button.png");
-	sun_button = App->textures->Load("pinball/sun_letters.png");
-	warp_button = App->textures->Load("pinball/Warp_letters.png");
-	multiplier_button = App->textures->Load("pinball/multiplier_letters.png");
-	numbers_buttons = App->textures->Load("pinball/numbers_buttons.png");
-	ignition = App->textures->Load("pinball/ignition.png");
-	Blue_button = App->textures->Load("pinball/blue_button.png");
-	Red_square = App->textures->Load("pinball/red_bar.png");
-	Words = App->textures->Load("pinball/word.png");
-	Kicker = App->textures->Load("pinball/kicker.png");
-	arrows = App->textures->Load("pinball/Arrows.png");
+	board = App->textures->Load("Data/Images/pinball_board.png");
+	flipper_Left = App->textures->Load("Data/Images/fliper_Left.png");
+	flipper_Right = App->textures->Load("Data/Images/fliper_Right.png");
+	balltex = App->textures->Load("Data/Images/ball.png");
+	bar_points= App->textures->Load("Data/Images/bar_points.png");
+	fuel= App->textures->Load("Data/Images/Fuel_letters.png");
+	lights = App->textures->Load("Data/Images/Light_letters.png");
+	ignition_button= App->textures->Load("Data/Images/red_button.png");
+	sun_button = App->textures->Load("Data/Images/sun_letters.png");
+	warp_button = App->textures->Load("Data/Images/Warp_letters.png");
+	multiplier_button = App->textures->Load("Data/Images/multiplier_letters.png");
+	numbers_buttons = App->textures->Load("Data/Images/numbers_buttons.png");
+	ignition = App->textures->Load("Data/Images/ignition.png");
+	Blue_button = App->textures->Load("Data/Images/blue_button.png");
+	Red_square = App->textures->Load("Data/Images/red_bar.png");
+	Words = App->textures->Load("Data/Images/word.png");
+	Kicker = App->textures->Load("Data/Images/kicker.png");
+	arrows = App->textures->Load("Data/Images/Arrows.png");
 
-	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
+	font_puntuation = App->fonts->Load("Data/Images/numbers.png", "1234567890", 1);
 	//Music and Fx
-	App->audio->PlayMusic("Music/Soundtrack_1_.ogg");//THIS IS THE VERSION LOW VOLUME FOR THE SOUNDTRACK SO WE CAN HEAR ALL THE FX
-	App->audio->LoadFx("Music/50_giant_ball_fx.wav");
-	App->audio->LoadFx("Music/flippers_fx.wav");
-	App->audio->LoadFx("Music/warp_fx.wav");
-	App->audio->LoadFx("Music/triangle_fx.wav");
-	App->audio->LoadFx("Music/spell_inition_fx.wav");
-	App->audio->LoadFx("Music/fuel_fx.wav");
-	App->audio->LoadFx("Music/losing_fx.wav");
+	App->audio->PlayMusic("Data/Music/Soundtrack_1_.ogg");//THIS IS THE VERSION LOW VOLUME FOR THE SOUNDTRACK SO WE CAN HEAR ALL THE FX
+	App->audio->LoadFx("Data/Music/50_giant_ball_fx.wav");
+	App->audio->LoadFx("Data/Music/flippers_fx.wav");
+	App->audio->LoadFx("Data/Music/warp_fx.wav");
+	App->audio->LoadFx("Data/Music/triangle_fx.wav");
+	App->audio->LoadFx("Data/Music/spell_inition_fx.wav");
+	App->audio->LoadFx("Data/Music/fuel_fx.wav");
+	App->audio->LoadFx("Data/Music/losing_fx.wav");
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 	
