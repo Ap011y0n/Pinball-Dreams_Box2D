@@ -188,6 +188,11 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 	red_square.w = 46;
 	red_square.h = 46;
 
+	kickerRect.x = 0;
+	kickerRect.y = 0;
+	kickerRect.w = 25;
+	kickerRect.h = 42;
+
 }
 
 ModuleScenePinball::~ModuleScenePinball()
@@ -207,9 +212,9 @@ bool ModuleScenePinball::Start()
 	App->renderer->camera.y = 0;
 	CurrScore = true;
 	PrevScore = MaxScore = false;
+	Kickerposy = 1107;
 
-
-	board = App->textures->Load("pinball/pinball_board_2.png");
+	board = App->textures->Load("pinball/pinball_board.png");
 	flipper_Left = App->textures->Load("pinball/fliper_Left.png");
 	flipper_Right = App->textures->Load("pinball/fliper_Right.png");
 	balltex = App->textures->Load("pinball/ball.png");
@@ -225,6 +230,7 @@ bool ModuleScenePinball::Start()
 	Blue_button = App->textures->Load("pinball/blue_button.png");
 	Red_square = App->textures->Load("pinball/red_bar.png");
 	Words = App->textures->Load("pinball/word.png");
+	Kicker = App->textures->Load("pinball/kicker.png");
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	//Music and Fx
 	App->audio->PlayMusic("Music/Soundtrack_1_.ogg");//THIS IS THE VERSION LOW VOLUME FOR THE SOUNDTRACK SO WE CAN HEAR ALL THE FX
@@ -235,12 +241,12 @@ bool ModuleScenePinball::Start()
 	App->audio->LoadFx("Music/spell_inition_fx.wav");
 	App->audio->LoadFx("Music/fuel_fx.wav");
 	App->audio->LoadFx("Music/losing_fx.wav");
+
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 	
-
-	
+	//Create all bodies in scene
 	CreateBodies();
-	//joints
+	//Create all joints
 	FlipperLJoint = App->physics->CreateRevoluteJoint(FlipperL->body, rotAxisL->body, 20, 24, 0, 40);
 	FlipperRJoint = App->physics->CreateRevoluteJoint(FlipperR->body, rotAxisR->body, 83, 19, -40, 0);
 	KickerJoint = App->physics->CreatePrismaticJoint(kickerBase->body, kicker->body, 0, 0, 0, 100,1000);
@@ -303,6 +309,7 @@ update_status ModuleScenePinball::Update()
 
 
 	p2SString title("Pinball_Dreams Box2D  mouse.x:%d mouse.y %d",
+
 	App->input->GetMouseX(), App->input->GetMouseY());
 	App->window->SetTitle(title.GetString());
 	MoveCamera();
@@ -310,7 +317,10 @@ update_status ModuleScenePinball::Update()
 
 	//All renders
 	App->renderer->Blit(board, 0, 0, NULL);
+	App->renderer->Blit(Kicker, 817, Kickerposy, &kickerRect);
 
+	//817
+	//1107
 	App->renderer->Blit(flipper_Left, (Flipper_L_positon_x+5),(Flipper_L_positon_y+10), NULL, 1.0f, Flipper_L_rotation, -5, -5);
 	App->renderer->Blit(flipper_Right, (Flipper_R_positon_x), (Flipper_R_positon_y +5), NULL, 1.0f, Flipper_R_rotation, -1,0);
 	blitbuttons(); //This function will make all the blits for the animations
@@ -473,16 +483,20 @@ void ModuleScenePinball::Input() {
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
 	{
 	
-		if(KickerjointMotor<2000)KickerjointMotor+=20;
-		KickerJoint->EnableMotor(false);
-	
-	
+		if (KickerjointMotor < 2000) {
+			KickerjointMotor += 20;
+			kickerRect.h = 42 - KickerjointMotor * 0.0165;
+			Kickerposy = 1107 + KickerjointMotor * 0.0165;
+		}
+	KickerJoint->EnableMotor(false);
 	}
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP)
 	{
 		KickerJoint->EnableMotor(true);
 		KickerJoint->SetMotorSpeed(PIXEL_TO_METERS(KickerjointMotor));
 		KickerjointMotor = 0;
+		kickerRect.h = 42;
+		Kickerposy = 1107;
 
 	}
 	}
@@ -601,15 +615,15 @@ void ModuleScenePinball::Light(bool &active) {
 	if (L2active && Iactive && Gactive && Hactive && Tactive) {
 
 		if (lightcounter == 3) {
-			currentpts += 1500000;	
+			tenmil = true;
 			lightcounter++;
 		}
 		if (lightcounter == 2) {
-			currentpts += 1000000;
+			fivemil = true;
 			lightcounter++;
 		}
 		if (lightcounter == 1) {
-			currentpts += 500000;
+			extraball = true;
 			lightcounter++;
 		}
 		if (lightcounter == 4) {
@@ -691,6 +705,14 @@ void ModuleScenePinball::Passage() {
 		currentpts += 500000;
 		collectFuel = false;
 	}
+	if (fivemil == true) {
+		currentpts += 5000000;
+		fivemil = false;
+	}
+	if (tenmil == true) {
+		currentpts += 10000000;
+		tenmil = false;
+	}
 	if (passagecounter < 7) {
 		passagecounter++;
 	}
@@ -721,13 +743,35 @@ void ModuleScenePinball::Passage() {
 		break;
 	}
 }
+void ModuleScenePinball::balltrap() {
+	if (extraball) {
+		extraball = false;
+		balls++;
+	}
+	switch (BalltrapCounter) {
+	case 1:
+		currentpts += 100000;
+		break;
+	case 2:
+		currentpts += 250000;
+		break;
+	case 3:
+		currentpts += 500000;
+		break;
+	case 4:
+		currentpts += 1000000;
+		BalltrapCounter = 0;
+		break;
+	}
+	BalltrapCounter++;
+}
 //Receives the name of a sensor, then starts a determinate proces depending of it's name property
 void ModuleScenePinball::getSensor(char* name) {
 	if (name == "Door_Sensor") {
 		DoorRJoint->EnableMotor(true);
 	}
 	if (name == "Hole") {
-		balls++;
+		balltrap();
 	}
 	if (name == "DeathSensor") {
 		Death();
@@ -788,18 +832,24 @@ void ModuleScenePinball::getSensor(char* name) {
 	}
 	if (name == "L2_sensor") {
 		Light(L2active);
+		App->audio->PlayFx(5, 0);
 	}
 	if (name == "I_sensor") {
 		Light(Iactive);
+		App->audio->PlayFx(5, 0);
 	}
 	if (name == "G_sensor") {
 		Light(Gactive);
+		App->audio->PlayFx(5, 0);
 	}
 	if (name == "H_sensor") {
 		Light(Hactive);
+		App->audio->PlayFx(5, 0);
 	}
 	if (name == "T_sensor") {
 		Light(Tactive);
+		App->audio->PlayFx(5, 0);
+
 	}
 	if (name == "Passage_Sensor") {
 		Passage();
@@ -936,7 +986,7 @@ void ModuleScenePinball::blitbuttons()
 	if (FiveH2 == true) {
 		App->renderer->Blit(Red_square, 338, 245, &red_square);
 	}
-
+	//App->renderer->Blit();
 
 }
 
@@ -977,6 +1027,7 @@ void ModuleScenePinball::ResetVar() {
 	collectFuel = false;
 	ignitionit = 0;
 	worditerator = 0;
+	BalltrapCounter = 1;
 }
 
 void ModuleScenePinball::CreateBodies() {

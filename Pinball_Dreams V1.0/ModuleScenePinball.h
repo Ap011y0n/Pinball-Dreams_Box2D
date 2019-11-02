@@ -52,11 +52,13 @@ public:
 	void Fuel(bool &active);
 	void Ignition(bool &active);
 	void SunRun();
+	void balltrap();
 	void Passage();
 	void blitbuttons();
 	void Death();
 	void ResetVar();
 	void CreateBodies();
+
 
 private:
 	scene_state state;
@@ -167,6 +169,7 @@ private:
 	bool Factive, Uactive, Eactive, Lactive;
 	bool Sun1, Sun2, Sun3, Sun1Reward, Sun2Reward, Sun3Reward;
 	uint Suncounter = 1u;
+	uint BalltrapCounter = 1u;
 	bool Ignition1, Ignition2, Ignition3;
 	int ignitionit;
 	uint passagecounter;
@@ -178,6 +181,9 @@ private:
 	bool sensor_Blue;
 	bool sensor_Blue2;
 	bool collectFuel;
+	bool fivemil;
+	bool tenmil;
+	bool extraball;
 	
 	//Animations
 	SDL_Texture* fuel;
@@ -234,7 +240,11 @@ private:
 
 	SDL_Texture* Words;
 	SDL_Rect words[6];
+
+	SDL_Texture* Kicker;
+	SDL_Rect kickerRect;
 	int worditerator;
+	int Kickerposy;
 
 };
 

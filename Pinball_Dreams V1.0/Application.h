@@ -10,7 +10,6 @@ class ModuleTextures;
 class ModuleInput;
 class ModuleAudio;
 class ModulePlayer;
-class ModuleSceneIntro;
 class ModulePhysics;
 class ModuleScenePinball;
 class ModuleFonts;
@@ -24,7 +23,6 @@ public:
 	ModuleInput* input;
 	ModuleAudio* audio;
 	ModulePlayer* player;
-	ModuleSceneIntro* scene_intro;
 	ModulePhysics* physics;
 	ModuleScenePinball* scene_pinball;
 	ModuleFonts* fonts;

@@ -7,7 +7,6 @@
 #include "ModuleAudio.h"
 #include "ModulePlayer.h"
 #include "ModulePhysics.h"
-#include "ModuleSceneIntro.h"
 #include "ModuleScenePinball.h"
 #include "ModuleFonts.h"
 
@@ -21,7 +20,6 @@ Application::Application()
 	input = new ModuleInput(this);
 	audio = new ModuleAudio(this, true);
 	player = new ModulePlayer(this);
-	scene_intro = new ModuleSceneIntro(this);
 	physics = new ModulePhysics(this);
 	scene_pinball = new ModuleScenePinball(this);
 	fonts = new ModuleFonts(this);
@@ -42,7 +40,6 @@ Application::Application()
 	
 	// Scenes
 	AddModule(scene_pinball);
-	AddModule(scene_intro);
 	
 	
 	// Player
