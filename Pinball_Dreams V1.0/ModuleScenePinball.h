@@ -4,6 +4,7 @@
 #include "p2Point.h"
 #include "Globals.h"
 
+#define TIMER 2000
 class PhysBody;
 class b2RevoluteJoint;
 class b2PrismaticJoint;
@@ -83,6 +84,7 @@ private:
 	PhysBody* Target1;
 	PhysBody* Target2;
 	PhysBody* Map;
+	PhysBody* BalltrapChain;
 
 	
 
@@ -92,8 +94,11 @@ private:
 	PhysBody* SSRPiston;
 	PhysBody* SSLPistonBase;
 	PhysBody* SSRPistonBase;
+	PhysBody* Trap;
 	b2RevoluteJoint* FlipperLJoint;
 	b2RevoluteJoint* FlipperRJoint;
+	b2RevoluteJoint* trapJoint;
+
 	b2PrismaticJoint* KickerJoint;
 	b2PrismaticJoint* SSLJoint;
 	b2PrismaticJoint* SSRJoint;
@@ -184,6 +189,8 @@ private:
 	bool fivemil;
 	bool tenmil;
 	bool extraball;
+	bool trap;
+	int traptimer;
 	
 	//Animations
 	SDL_Texture* fuel;
@@ -246,5 +253,7 @@ private:
 	int worditerator;
 	int Kickerposy;
 
+	SDL_Texture* arrows;
+	SDL_Rect arrowrect[5];
 };
 

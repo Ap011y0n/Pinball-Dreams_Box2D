@@ -193,6 +193,13 @@ ModuleScenePinball::ModuleScenePinball(Application* app, bool start_enabled) : M
 	kickerRect.w = 25;
 	kickerRect.h = 42;
 
+	width = 30;
+	for (int i = 0; i < 5; i++) {
+		arrowrect[i].x = width * i;
+		arrowrect[i].y = 0;
+		arrowrect[i].h = 46;
+		arrowrect[i].w = 30;
+	}
 }
 
 ModuleScenePinball::~ModuleScenePinball()
@@ -231,6 +238,8 @@ bool ModuleScenePinball::Start()
 	Red_square = App->textures->Load("pinball/red_bar.png");
 	Words = App->textures->Load("pinball/word.png");
 	Kicker = App->textures->Load("pinball/kicker.png");
+	arrows = App->textures->Load("pinball/Arrows.png");
+
 	font_puntuation = App->fonts->Load("pinball/numbers.png", "1234567890", 1);
 	//Music and Fx
 	App->audio->PlayMusic("Music/Soundtrack_1_.ogg");//THIS IS THE VERSION LOW VOLUME FOR THE SOUNDTRACK SO WE CAN HEAR ALL THE FX
@@ -249,6 +258,8 @@ bool ModuleScenePinball::Start()
 	//Create all joints
 	FlipperLJoint = App->physics->CreateRevoluteJoint(FlipperL->body, rotAxisL->body, 20, 24, 0, 40);
 	FlipperRJoint = App->physics->CreateRevoluteJoint(FlipperR->body, rotAxisR->body, 83, 19, -40, 0);
+	trapJoint = App->physics->CreateRevoluteJoint(BalltrapChain->body, Trap->body, 145, 265, -25, 60);
+
 	KickerJoint = App->physics->CreatePrismaticJoint(kickerBase->body, kicker->body, 0, 0, 0, 100,1000);
 	SSLJoint = App->physics->CreatePrismaticJoint(SSLPistonBase->body, SSLPiston->body, 0, -10, 20, 30, 400, 66, 0.5 ,0.5);
 	SSRJoint = App->physics->CreatePrismaticJoint(SSRPistonBase->body, SSRPiston->body, 0, -10, 20, 30, 400, -66, -0.5, 0.5);
@@ -256,7 +267,7 @@ bool ModuleScenePinball::Start()
 	DoorRJoint = App->physics->CreatePrismaticJoint(Map->body, doorR->body, 760, 115, -20, 100, 4000, 35, 0.5, 0.5);
 	
 	ball->listener = this;
-
+	
 	return ret;
 }
 
@@ -286,7 +297,6 @@ bool ModuleScenePinball::CleanUp()
 update_status ModuleScenePinball::Update()
 {
 	
-
 	Flipper_L_rotation = FlipperL->GetRotation();
 	FlipperL->GetPosition(Flipper_L_positon_x, Flipper_L_positon_y);
 
@@ -299,7 +309,9 @@ update_status ModuleScenePinball::Update()
 
 	FlipperLJoint->SetMotorSpeed(-1000 * DEGTORAD);
 	FlipperRJoint->SetMotorSpeed(1000 * DEGTORAD);
-	
+	if (trap)trapJoint->SetMotorSpeed(1000 * DEGTORAD);
+	if (!trap)trapJoint->SetMotorSpeed(-1000 * DEGTORAD);
+	if (traptimer + TIMER < SDL_GetTicks()) trap = false;
 	if (KickerJoint->IsMotorEnabled())KickerJoint->EnableMotor(false);
 	if(SSRJoint->IsMotorEnabled())SSRJoint->EnableMotor(false);
 	if (SSLJoint->IsMotorEnabled())SSLJoint->EnableMotor(false);
@@ -308,9 +320,7 @@ update_status ModuleScenePinball::Update()
 	Input();
 
 
-	p2SString title("Pinball_Dreams Box2D  mouse.x:%d mouse.y %d",
-
-	App->input->GetMouseX(), App->input->GetMouseY());
+	p2SString title("Pinball_Dreams Box2D");
 	App->window->SetTitle(title.GetString());
 	MoveCamera();
 
@@ -744,6 +754,8 @@ void ModuleScenePinball::Passage() {
 	}
 }
 void ModuleScenePinball::balltrap() {
+	trap = true;
+	traptimer = SDL_GetTicks();
 	if (extraball) {
 		extraball = false;
 		balls++;
@@ -986,8 +998,16 @@ void ModuleScenePinball::blitbuttons()
 	if (FiveH2 == true) {
 		App->renderer->Blit(Red_square, 338, 245, &red_square);
 	}
-	//App->renderer->Blit();
-
+	if (passagecounter != 0) App->renderer->Blit(arrows, 220, 471, &arrowrect[0]);
+	if (fivemil) App->renderer->Blit(arrows, 244, 518, &arrowrect[1]);
+	if (tenmil) App->renderer->Blit(arrows, 268, 566, &arrowrect[2]);
+	if (collectFuel) App->renderer->Blit(arrows, 291, 612, &arrowrect[3]);
+	//App->renderer->Blit(arrows, 311, 499, &arrowrect[2]);
+	//App->renderer->Blit(arrows, 337, 549, &arrowrect[3]);
+	if (extraball)App->renderer->Blit(arrows, 363, 597, &arrowrect[1]);
+	if(Sun1Reward) App->renderer->Blit(arrows, 660, 738, &arrowrect[4]);
+	if (Sun2Reward) App->renderer->Blit(arrows, 686, 688, &arrowrect[4]);
+	if (Sun3Reward) App->renderer->Blit(arrows, 711, 638, &arrowrect[4]);
 }
 
 void ModuleScenePinball::Death() {
@@ -1028,6 +1048,8 @@ void ModuleScenePinball::ResetVar() {
 	ignitionit = 0;
 	worditerator = 0;
 	BalltrapCounter = 1;
+	trap = false;
+	
 }
 
 void ModuleScenePinball::CreateBodies() {
@@ -1171,7 +1193,7 @@ void ModuleScenePinball::CreateBodies() {
 	133, 20
 	};
 	int MapTunnel[52] = {
-	144, 388,
+	141, 390,
 	78, 250,
 	81, 222,
 	98, 184,
@@ -1188,15 +1210,15 @@ void ModuleScenePinball::CreateBodies() {
 	112, 186,
 	121, 205,
 	137, 236,
-	187, 336,
-	180, 340,
-	131, 241,
-	120, 232,
-	104, 232,
-	92, 242,
-	88, 258,
-	148, 378,
-	149, 385
+	188, 340,
+	180, 342,
+	129, 246,
+	117, 237,
+	106, 237,
+	96, 245,
+	94, 257,
+	144, 381,
+	144, 390
 	};
 	int lane[24] = {
 	4, 18,
@@ -1236,7 +1258,7 @@ void ModuleScenePinball::CreateBodies() {
 	Map = App->physics->CreateChain(0, 0, pinball_board, 138);
 	App->physics->CreateChain(200, 816, MappartL, 24);
 	App->physics->CreateChain(580, 816, MappartR, 22);
-	App->physics->CreateChain(155, 150, MapTunnel, 52);
+	BalltrapChain = App->physics->CreateChain(155, 150, MapTunnel, 52);
 	App->physics->CreateChain(473, 183, lane, 24);
 	App->physics->CreateChain(613, 183, lane, 24);
 	App->physics->CreateChain(542, 192, lane, 24);
@@ -1248,6 +1270,7 @@ void ModuleScenePinball::CreateBodies() {
 	
 	
 	//map components
+	App->physics->CreateCircle(481, 1113, 7, "", b2_staticBody);
 	rotAxisL = App->physics->CreateCircle(358, 1040, 10, "rotAxisL", b2_staticBody);
 	rotAxisR = App->physics->CreateCircle(597, 1040, 10, "rotAxisR", b2_staticBody);
 	FlipperL = App->physics->CreatePolygon(358, 1040, Flipper_L, 16, "Flipper_L");
@@ -1258,9 +1281,9 @@ void ModuleScenePinball::CreateBodies() {
 	Bumper2 = App->physics->CreateCircle(560, 450, 50, "Bumper2", b2_staticBody);
 	Target1 = App->physics->CreatePolygon(445, 495, target1, 16, "Target1", b2_staticBody);
 	Target2 = App->physics->CreatePolygon(675, 535, target2, 16, "Target2", b2_staticBody);
-	App->physics->CreateCircle(482, 1115, 6, "", b2_staticBody);
+	Trap = App->physics->CreateRectangle(366, 469, 6, 90, "");
 	
-	//Pistons
+	//Joints components
 	doorL = App->physics->CreateRectangle(200, 200, 10, 100, "doorL");
 	doorR = App->physics->CreateRectangle(900, 200, 10, 100, "doorR");
 	kickerBase = App->physics->CreateRectangle(830, 1115, 30, 15, "piston1", b2_staticBody);
