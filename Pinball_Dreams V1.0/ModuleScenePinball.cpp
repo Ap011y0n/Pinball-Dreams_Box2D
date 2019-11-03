@@ -254,7 +254,8 @@ bool ModuleScenePinball::Start()
 	App->audio->LoadFx("Data/Music/spell_inition_fx.wav");
 	App->audio->LoadFx("Data/Music/fuel_fx.wav");
 	App->audio->LoadFx("Data/Music/losing_fx.wav");
-
+	App->audio->LoadFx("Data/Music/metal_spring_fx.wav");
+	App->audio->LoadFx("Data/Music/light_fx.wav");
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 	
 	//Create all bodies in scene
@@ -293,7 +294,10 @@ bool ModuleScenePinball::CleanUp()
 	App->textures->Unload(numbers_buttons);
 	App->textures->Unload(ignition);
 	App->textures->Unload(Blue_button);
-
+	App->textures->Unload(Red_square);
+	App->textures->Unload(Words);
+	App->textures->Unload(Kicker);
+	App->textures->Unload(arrows);
 	return true;
 }
 
@@ -524,6 +528,7 @@ void ModuleScenePinball::Input() {
 	}
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP)
 	{
+		App->audio->PlayFx(8, 0);
 		KickerJoint->EnableMotor(true);
 		KickerJoint->SetMotorSpeed(PIXEL_TO_METERS(KickerjointMotor));
 		KickerjointMotor = 0;
@@ -865,9 +870,11 @@ void ModuleScenePinball::getSensor(char* name) {
 	}
 	if (name == "sensor500") {
 		FiveHpts(FiveH1);
+		App->audio->PlayFx(5, 0);
 	}
 	if (name == "sensor502") {
 		FiveHpts(FiveH2);
+		App->audio->PlayFx(5, 0);
 	}
 	if (name == "W_sensor") {
 		Warp(1);
@@ -887,19 +894,19 @@ void ModuleScenePinball::getSensor(char* name) {
 	}
 	if (name == "L2_sensor") {
 		Light(L2active);
-		App->audio->PlayFx(5, 0);
+		App->audio->PlayFx(9, 0);
 	}
 	if (name == "I_sensor") {
 		Light(Iactive);
-		App->audio->PlayFx(5, 0);
+		App->audio->PlayFx(9, 0);
 	}
 	if (name == "G_sensor") {
 		Light(Gactive);
-		App->audio->PlayFx(5, 0);
+		App->audio->PlayFx(9, 0);
 	}
 	if (name == "H_sensor") {
 		Light(Hactive);
-		App->audio->PlayFx(5, 0);
+		App->audio->PlayFx(9, 0);
 	}
 	if (name == "T_sensor") {
 		Light(Tactive);
