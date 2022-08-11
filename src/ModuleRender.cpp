@@ -21,20 +21,21 @@ bool ModuleRender::Init()
 {
 	LOG("Creating Renderer context");
 	bool ret = true;
-	Uint32 flags = SDL_RENDERER_SOFTWARE;
+	Uint32 flags = 0;
 
 	if(VSYNC == true)
 	{
 		flags |= SDL_RENDERER_PRESENTVSYNC;
 	}
-
-	renderer = SDL_CreateSoftwareRenderer(App->window->screen_surface);
-//	renderer = SDL_CreateRenderer(App->window->->screen_surface, -1, flags);
-	
+	renderer = SDL_GetRenderer(App->window->window);
 	if(renderer == NULL)
 	{
-		LOG("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
-		ret = false;
+		renderer = SDL_CreateRenderer(App->window->window, -1, flags);
+		if(renderer == NULL)
+		{
+			LOG("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+			ret = false;
+		}
 	}
 
 	return ret;
