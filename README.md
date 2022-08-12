@@ -18,6 +18,13 @@ https://github.com/polf780
 ## Github source
 * https://github.com/Ap011y0n/Pinball-Dreams_Box2D
 
+## Compile
+
+```c
+cmake --install-prefix=<PREFIX> . && make install
+
+```
+
 ## Controls and gameplay
 * Press left arrow to use left flipper <--
 * Press right arrow to use right flipper -->
