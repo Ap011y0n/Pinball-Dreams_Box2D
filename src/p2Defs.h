@@ -1,7 +1,10 @@
-#ifndef __P2DEFS_H__
-#define __P2DEFS_H__
+#pragma once
+
+#include "Globals.h"
 
 #include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
 
 //  NULL just in case ----------------------
 
@@ -32,8 +35,6 @@
     }
 
 #define IN_RANGE( value, min, max ) ( ((value) >= (min) && (value) <= (max)) ? 1 : 0 )
-#define MIN( a, b ) ( ((a) < (b)) ? (a) : (b) )
-#define MAX( a, b ) ( ((a) > (b)) ? (a) : (b) )
 #define TO_BOOL( a )  ( (a != 0) ? true : false )
 
 typedef unsigned int uint;
@@ -59,4 +60,23 @@ inline const char* const PATH(const char* folder, const char* file)
 	return path;
 }
 
-#endif
+inline const char* const PATH_EXISTS(const char* section_subdir, const char* file)
+{
+	char prefix[MID_STR];
+	snprintf(prefix, MID_STR, "%s/%s/", "data", section_subdir);
+	char* rel_path = strdup(PATH(prefix, file));
+	char* abs_path = strdup(PATH(DATADIR, rel_path));
+	char* path = abs_path;
+	struct stat sb;
+	if(stat(path, &sb) == -1)
+	{
+		if(stat(rel_path, &sb) == -1)
+		{
+			LOG("Could not locate filename: %s", rel_path);
+			return NULL;
+		}
+		free(abs_path);
+		path = rel_path;
+	}
+	return path;
+}

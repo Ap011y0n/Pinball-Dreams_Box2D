@@ -55,4 +55,4 @@ endif()
 message("-- Data files will be installed to: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/")
 
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Config )
-install(DIRECTORY Data TYPE DATA COMPONENT assets)
+install(DIRECTORY data TYPE DATA COMPONENT assets)

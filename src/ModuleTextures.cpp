@@ -54,11 +54,13 @@ bool ModuleTextures::CleanUp()
 SDL_Texture* const ModuleTextures::Load(const char* path)
 {
 	SDL_Texture* texture = NULL;
-	SDL_Surface* surface = IMG_Load(path);
+	const char* abs_path = PATH_EXISTS("images", path);
+
+	SDL_Surface* surface = IMG_Load(abs_path);
 
 	if(surface == NULL)
 	{
-		LOG("Could not load surface with path: %s. IMG_Load: %s", path, IMG_GetError());
+		LOG("Could not load surface with path: %s. IMG_Load: %s", abs_path, IMG_GetError());
 	}
 	else
 	{
